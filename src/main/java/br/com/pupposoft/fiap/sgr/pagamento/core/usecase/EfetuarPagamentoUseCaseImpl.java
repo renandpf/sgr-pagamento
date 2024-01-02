@@ -106,9 +106,9 @@ public class EfetuarPagamentoUseCaseImpl implements EfetuarPagamentoUseCase {
 
 	private void setStatusDoPedido(PedidoDto pedidoDto) {
 		final StatusPedido statusAguardandoConfirmacaoPagamento = StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO;
-        Pedido pedido = Pedido.builder().id(pedidoDto.getId()).status(StatusPedido.get(pedidoDto.getStatusId())).build();
+        Pedido pedido = Pedido.builder().id(pedidoDto.getId()).status(pedidoDto.getStatus()).build();
         pedido.setStatus(statusAguardandoConfirmacaoPagamento);//Regras dentro do domain
-        pedidoDto.setStatusId(StatusPedido.get(statusAguardandoConfirmacaoPagamento));
+        pedidoDto.setStatus(statusAguardandoConfirmacaoPagamento);
 	}
 
 	

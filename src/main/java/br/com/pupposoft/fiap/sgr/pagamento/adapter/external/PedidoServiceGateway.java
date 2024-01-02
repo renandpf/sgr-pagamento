@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.pupposoft.fiap.sgr.pagamento.adapter.external.json.PedidoJson;
-import br.com.pupposoft.fiap.sgr.pagamento.core.domain.StatusPedido;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.ItemDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ErrorToAccessPedidoServiceException;
@@ -81,7 +80,7 @@ public class PedidoServiceGateway implements PedidoGateway {
 			final String url = baseUrl + "/sgr/pedidos/" + pedido.getId() + "/status"; 
 			HttpConnectDto httpConnectDto = HttpConnectDto.builder()
 					.url(url)
-					.requestBody(PedidoJson.builder().status(StatusPedido.get(pedido.getStatusId())).build())
+					.requestBody(PedidoJson.builder().status(pedido.getStatus()).build())
 					.build();
 			
 			final String response = httpConnectGateway.patch(httpConnectDto);
@@ -110,7 +109,7 @@ public class PedidoServiceGateway implements PedidoGateway {
 		PedidoDto pedidoDto = PedidoDto.builder()
 				.id(pedidoJson.getId())
 				.clienteId(pedidoJson.getClienteId())
-				.statusId(StatusPedido.get(pedidoJson.getStatus()))
+				.status(pedidoJson.getStatus())
 				.itens(itensDto)
 				.build();
 		

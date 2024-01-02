@@ -2,6 +2,7 @@ package br.com.pupposoft.fiap.sgr.pagamento.core.dto;
 
 import java.util.List;
 
+import br.com.pupposoft.fiap.sgr.pagamento.core.domain.StatusPedido;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +17,8 @@ public class PedidoDto {
     private List<ItemDto> itens;
     
     @Setter
-    private Double valor;
+    private StatusPedido status;
     
     @Setter
-    private Long statusId;
+    private Double valor;
 }

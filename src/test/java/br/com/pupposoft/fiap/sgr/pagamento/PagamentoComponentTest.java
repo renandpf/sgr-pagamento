@@ -11,8 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -30,19 +28,16 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 import br.com.pupposoft.fiap.SgrPagamentoService;
-import br.com.pupposoft.fiap.sgr.config.database.gerencial.entity.ClienteEntity;
-import br.com.pupposoft.fiap.sgr.config.database.gerencial.entity.ProdutoEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PagamentoEntity;
-import br.com.pupposoft.fiap.sgr.config.database.pedido.entity.ItemEntity;
-import br.com.pupposoft.fiap.sgr.config.database.pedido.entity.PedidoEntity;
-import br.com.pupposoft.fiap.sgr.config.database.pedido.entity.PlataformaPagamentoEntity;
-import br.com.pupposoft.fiap.sgr.config.database.pedido.repository.PlataformaPagamentoEntityRepository;
+import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PlataformaPagamentoEntity;
+import br.com.pupposoft.fiap.sgr.config.database.pagamento.repository.PlataformaPagamentoEntityRepository;
 import br.com.pupposoft.fiap.sgr.pagamento.adapter.web.PagamentoApiController;
 import br.com.pupposoft.fiap.sgr.pagamento.adapter.web.json.PagamentoJson;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.ClienteGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PedidoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PlataformaPagamentoGateway;
 import br.com.pupposoft.fiap.starter.http.HttpConnect;
+import br.com.pupposoft.fiap.test.databuilder.DataBuilderBase;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SgrPagamentoService.class)
 @TestPropertySource(locations = "classpath:application-componenttest.properties")
@@ -94,9 +89,7 @@ class PagamentoComponentTest extends ComponentTestBase {
 		
 		createPlataformPagamentoMP();
 		
-		PedidoEntity pedidoEntity = createPedido();
-		
-		PagamentoJson pagamentoJsonRequest = PagamentoJson.builder().pedidoId(pedidoEntity.getId()).forma("PIX").build();
+		PagamentoJson pagamentoJsonRequest = PagamentoJson.builder().pedidoId(DataBuilderBase.getRandomLong()).forma("PIX").build();
 		PagamentoJson pagamentoJsonResponse = pagamentoApiController.efetuar(pagamentoJsonRequest);
 		
 		assertEquals(idPagamentoExterno+"", pagamentoJsonResponse.getPagamentoExternoId());
@@ -126,64 +119,16 @@ class PagamentoComponentTest extends ComponentTestBase {
 	}
 
 	private PagamentoEntity createObterByIdentificadorPagamentoData() {
-		PedidoEntity pedido = createPedido();
-
 		
 		PagamentoEntity pagamentoEntity = PagamentoEntity
 				.builder()
 				.id(null)
 				.identificadorPagamentoExterno(getRandomString())
 				.valor(getRandomDouble())
-				.pedido(pedido)
+				.pedidoId(getRandomLong())
 				.build();
 		
 		pagamentoEntityRepository.save(pagamentoEntity);
 		return pagamentoEntity;
 	}
-
-	private PedidoEntity createPedido() {
-		ClienteEntity cliente = ClienteEntity.builder()
-				.id(null)
-				.nome(getRandomString())
-				.cpf(getRandomString())
-				.email(getRandomString())
-				.build();
-		clienteEntityRepository.save(cliente);
-		
-		ProdutoEntity produto = ProdutoEntity.builder()
-				.id(null)
-				.nome(getRandomString())
-				.descricao(getRandomString())
-				.imagem(null)
-				.valor(new BigDecimal(getRandomDouble()))
-				.categoriaId(0L)
-				.itens(null)
-				.build();
-		produtoEntityRepository.save(produto);
-		
-
-		PedidoEntity pedido = PedidoEntity.builder()
-				.id(null)
-				.statusId(0L)
-				.dataCadastro(LocalDate.now())
-				.dataConclusao(null)
-				.observacao(getRandomString())
-				.cliente(cliente)
-				.itens(null)
-				.pagamentos(null)
-				.build();
-		pedidoEntityRepository.save(pedido);
-		
-		
-		ItemEntity item = ItemEntity.builder()
-				.id(null)
-				.quantidade(getRandomLong())
-				.valorUnitario(getRandomDouble())
-				.produto(produto)
-				.pedido(pedido)
-				.build();
-		itemEntityRepository.save(item);
-		return pedido;
-	}
-	
 }

@@ -33,12 +33,12 @@ public class AtualizarPedidoUseCaseImpl implements AtualizarStatusPagamentoUseCa
         
         StatusPedido newStatus = plataformaPagamentoFactory.obter(plataformaPagamento).obtemStatus(identificadorPagamento);
         
-        Pedido pedido = Pedido.builder().id(pedidoDto.getId()).status(StatusPedido.get(pedidoDto.getStatusId())).build();
+        Pedido pedido = Pedido.builder().id(pedidoDto.getId()).status(pedidoDto.getStatus()).build();
         pedido.setStatus(newStatus);//Aplica as regras de negócio que estão dentro do domain
 
         PedidoDto pedidoDtoStatusPago = PedidoDto.builder()
         		.id(pedido.getId())
-        		.statusId(StatusPedido.get(newStatus))
+        		.status(newStatus)
         		.build();
 
         this.pedidoGateway.alterarStatus(pedidoDtoStatusPago);

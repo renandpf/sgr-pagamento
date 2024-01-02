@@ -22,6 +22,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.pupposoft.fiap.sgr.pagamento.core.domain.ModoPagamento;
+import br.com.pupposoft.fiap.sgr.pagamento.core.domain.StatusPedido;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.ClienteDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.ItemDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PagamentoDto;
@@ -71,7 +72,7 @@ class EfetuarPagamentoUseCaseUnitTest {
 				ItemDto.builder().id(getRandomLong()).quantidade(3L).valorUnitario(5D).build(),
 				ItemDto.builder().id(getRandomLong()).quantidade(4L).valorUnitario(2.8D).build());
 		PedidoDto pedidoDto = PedidoDto.builder().id(pedidoId).clienteId(clienteId)
-				.statusId(0L)
+				.status(StatusPedido.RECEBIDO)
 				.valor(null)//O valor é calculado e setado dentro do usecase
 				.itens(itensDto)
 				.build();
@@ -136,7 +137,7 @@ class EfetuarPagamentoUseCaseUnitTest {
 		
 		EfetuarPagamentoParamDto paramsDto = createParams(pedidoId);
 
-		Optional<PedidoDto> pedidoOp = Optional.of(PedidoDto.builder().id(pedidoId).clienteId(clienteId).statusId(0L).build());
+		Optional<PedidoDto> pedidoOp = Optional.of(PedidoDto.builder().id(pedidoId).clienteId(clienteId).status(StatusPedido.RECEBIDO).build());
 		doReturn(pedidoOp).when(pedidoGateway).obterPorId(pedidoId);
 		
 		Optional<ClienteDto> clienteOp = Optional.empty();

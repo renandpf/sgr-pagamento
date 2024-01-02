@@ -1,4 +1,4 @@
-package br.com.pupposoft.fiap.sgr.config.database.pedido.entity;
+package br.com.pupposoft.fiap.sgr.config.database.pagamento.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

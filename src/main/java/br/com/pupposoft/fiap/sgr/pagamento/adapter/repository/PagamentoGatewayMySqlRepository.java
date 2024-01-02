@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PagamentoEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.repository.PagamentoEntityRepository;
-import br.com.pupposoft.fiap.sgr.config.database.pedido.entity.PedidoEntity;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PagamentoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ErrorToAccessRepositoryException;
@@ -29,7 +28,7 @@ public class PagamentoGatewayMySqlRepository implements PagamentoGateway {
 			PagamentoEntity pagamentoEntity = PagamentoEntity.builder()
 					.identificadorPagamentoExterno(pagamentoDto.getPagamentoExternoId())
 					.valor(pagamentoDto.getValor())
-					.pedido(PedidoEntity.builder().id(pagamentoDto.getPedido().getId()).build())
+					.pedidoId(pagamentoDto.getPedido().getId())
 					.build();
 
 			PagamentoEntity pagamentoEntityCreated = pagamentoRepository.save(pagamentoEntity);
@@ -72,7 +71,7 @@ public class PagamentoGatewayMySqlRepository implements PagamentoGateway {
 		PagamentoDto pagamentoDto = PagamentoDto.builder()
 				.id(pagamentoEntity.getId())
 				.pagamentoExternoId(pagamentoExternoId)
-				.pedido(PedidoDto.builder().id(pagamentoEntity.getPedido().getId()).build())
+				.pedido(PedidoDto.builder().id(pagamentoEntity.getPedidoId()).build())
 				.build();
 		return pagamentoDto;
 	}

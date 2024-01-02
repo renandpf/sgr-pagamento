@@ -5,9 +5,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import br.com.pupposoft.fiap.sgr.config.database.pedido.entity.PlataformaPagamentoEntity;
-import br.com.pupposoft.fiap.sgr.config.database.pedido.entity.StatusPlataformaPagamento;
-import br.com.pupposoft.fiap.sgr.config.database.pedido.repository.PlataformaPagamentoEntityRepository;
+import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PlataformaPagamentoEntity;
+import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.StatusPlataformaPagamento;
+import br.com.pupposoft.fiap.sgr.config.database.pagamento.repository.PlataformaPagamentoEntityRepository;
+
 import br.com.pupposoft.fiap.sgr.pagamento.core.domain.PlataformaPagamento;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.PlataformaPagamentoConfigParamsDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.PlataformaPagamentoConfigReturnDto;
