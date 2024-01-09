@@ -48,7 +48,7 @@ public class PagamentoApiController {
     }
 
 	@PostMapping("notificacoes/{plataformaPagamento}")
-    public void notificacoes(@PathVariable String plataformaPagamento, @RequestBody(required = true) NotificacaoPagamentoJson notificacaoPagamentoJson) {
+    public void notificacoes(@PathVariable("plataformaPagamento") String plataformaPagamento, @RequestBody(required = true) NotificacaoPagamentoJson notificacaoPagamentoJson) {
         log.trace("Start plataformaPagamento={}, notificacaoPagamentoJson={}", plataformaPagamento, notificacaoPagamentoJson);
 
         PlataformaPagamento plataformaPagamentoDomain = mapPlataformaTerceiro(plataformaPagamento);
@@ -58,7 +58,7 @@ public class PagamentoApiController {
     }
 
 	@GetMapping("identificador-pagamento-externo/{identificadorPagamentoExterno}")
-	public PagamentoJson obterByIdentificadorPagamento(@PathVariable String identificadorPagamentoExterno) {
+	public PagamentoJson obterByIdentificadorPagamento(@PathVariable("identificadorPagamentoExterno") String identificadorPagamentoExterno) {
 		log.trace("Start identificadorPagamento={}", identificadorPagamentoExterno);
 		PagamentoDto dto = pagamentoController.obterByIdentificadorPagamento(identificadorPagamentoExterno);
 		PagamentoJson json = mapDtoToJson(dto);
@@ -67,17 +67,15 @@ public class PagamentoApiController {
 	}
 
 	private PagamentoJson mapDtoToJson(PagamentoDto dto) {
-		PagamentoJson json = PagamentoJson.builder()
+		return PagamentoJson.builder()
 				.id(dto.getId())
 				.pagamentoExternoId(dto.getPagamentoExternoId())
 				.pedidoId(dto.getPedido().getId())
 				.build();
-		return json;
 	}
 	
 	private EfetuarPagamentoParamDto mapJsonToDto(PagamentoJson pagamentoJson) {
-        
-        EfetuarPagamentoParamDto paramsDto = EfetuarPagamentoParamDto.builder()
+        return EfetuarPagamentoParamDto.builder()
         .pagamento(PagamentoDto
         		.builder()
         		.id(pagamentoJson.getId())
@@ -86,7 +84,6 @@ public class PagamentoApiController {
         		.formaPagamento(pagamentoJson.getForma())
         		.build())
         .build();
-		return paramsDto;
 	}
 	
 	//TODO: tende a crescer. Ideal ser um factory ou Map
