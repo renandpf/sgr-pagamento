@@ -52,6 +52,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Get App Version
+      id: get-app-version
+      run: |
+        echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4.0.1
       with:
@@ -68,7 +73,7 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: ${{ github.sha }}
+        IMAGE_TAG: ${{ steps.get-app-version.outputs.RELEASE_VERSION }}-RELEASE
       run: |
         # Build a docker container and
         # push it to ECR so that it can
