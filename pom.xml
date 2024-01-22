@@ -8,6 +8,11 @@
 	<packaging>jar</packaging>
 	<name>Sistema de Gestão de Refeição - Pagamento Service</name>
 
+	<properties>
+		<sonar.projectKey>renandpf_sgr-pagamento</sonar.projectKey>
+	</properties>
+
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
