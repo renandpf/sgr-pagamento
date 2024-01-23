@@ -70,7 +70,5 @@ jobs:
           -Dsonar.projectName=${{ env.PROJECT_NAME }} 
           -Dsonar.host.url=${{ env.SONAR_HOST }} 
           -Dsonar.token=${{ env.SONAR_TOKEN }}
-          -Dsonar.coverage.exclusions=src/main/java/br/com/pupposoft/fiap/SgrPagamentoService.java, src/main/java/br/com/pupposoft/fiap/sgr/pagamento/adapter/external/PlataformaPagamentoMockGateway.java, src/main/java/br/com/pupposoft/fiap/sgr/pagamento/adapter/external/PlataformaPagamentoPagSeguroGateway.java, src/main/java/br/com/pupposoft/fiap/sgr/**dto**/**/*
-          
-          "
+          -Dsonar.coverage.exclusions=src/main/java/br/com/pupposoft/fiap/SgrPagamentoService.java,src/main/java/br/com/pupposoft/fiap/sgr/pagamento/adapter/external/PlataformaPagamentoMockGateway.java,src/main/java/br/com/pupposoft/fiap/sgr/pagamento/adapter/external/PlataformaPagamentoPagSeguroGateway.java,src/main/java/br/com/pupposoft/fiap/sgr/**dto**/**/*"
           mvn clean verify sonar:sonar
