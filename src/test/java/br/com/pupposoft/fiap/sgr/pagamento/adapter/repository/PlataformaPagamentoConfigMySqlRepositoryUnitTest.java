@@ -1,38 +1,29 @@
 package br.com.pupposoft.fiap.sgr.pagamento.adapter.repository;
 
-import static org.junit.Assert.assertTrue;
+import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomLong;
+import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PagamentoEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PlataformaPagamentoEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.StatusPlataformaPagamento;
-import br.com.pupposoft.fiap.sgr.config.database.pagamento.repository.PagamentoEntityRepository;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.repository.PlataformaPagamentoEntityRepository;
 import br.com.pupposoft.fiap.sgr.pagamento.core.domain.PlataformaPagamento;
-import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PagamentoDto;
-import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.PlataformaPagamentoConfigParamsDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.PlataformaPagamentoConfigReturnDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ErrorToAccessRepositoryException;
-import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PagamentoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PlataformaPagamentoConfigGateway;
-
-import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.*;
 
 @ExtendWith(MockitoExtension.class)
 class PlataformaPagamentoConfigMySqlRepositoryUnitTest {
