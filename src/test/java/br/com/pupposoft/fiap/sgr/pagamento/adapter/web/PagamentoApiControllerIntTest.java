@@ -3,6 +3,7 @@ package br.com.pupposoft.fiap.sgr.pagamento.adapter.web;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -29,6 +30,8 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PagamentoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.EfetuarPagamentoParamDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.EfetuarPagamentoReturnDto;
+import br.com.pupposoft.fiap.sgr.pagamento.core.exception.PagamentoNaoEncontradoException;
+
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.*;
 
 @WebMvcTest(PagamentoApiController.class)
@@ -148,5 +151,36 @@ class PagamentoApiControllerIntTest {
 		
 		verify(pagamentoController).obterByIdentificadorPagamento(identificadorPagamento);
 	}
+	
+	@Test
+	void shouldBussinesError() throws Exception {
+		final String identificadorPagamento = getRandomString();
+		
 
+		doThrow(new PagamentoNaoEncontradoException()) .when(pagamentoController).obterByIdentificadorPagamento(identificadorPagamento);
+		
+		this.mockMvc.perform(
+				get("/sgr/pagamentos/identificador-pagamento-externo/" + identificadorPagamento))
+		.andDo(print())
+		.andExpect(status().isNotFound())
+		.andExpect(content().json("{\"code\":\"sgr.pagamentoNaoEncontrado\",\"message\":\"Pagamento não encontrado\"}"));
+		
+		verify(pagamentoController).obterByIdentificadorPagamento(identificadorPagamento);
+	}
+
+	@Test
+	void shouldUnexpectedError() throws Exception {
+		final String identificadorPagamento = getRandomString();
+		
+		doThrow(new RuntimeException()).when(pagamentoController).obterByIdentificadorPagamento(identificadorPagamento);
+		
+		this.mockMvc.perform(
+				get("/sgr/pagamentos/identificador-pagamento-externo/" + identificadorPagamento))
+		.andDo(print())
+		.andExpect(status().isInternalServerError())
+		.andExpect(content().json("{\"code\":\"INTERNAL_SERVER_ERROR\",\"message\":\"Internal Server Error\"}"));
+		
+		verify(pagamentoController).obterByIdentificadorPagamento(identificadorPagamento);
+	}
+	
 }
