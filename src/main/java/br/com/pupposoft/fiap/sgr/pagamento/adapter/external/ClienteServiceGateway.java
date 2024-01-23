@@ -71,13 +71,12 @@ public class ClienteServiceGateway implements ClienteGateway {
 	}
 
 	private ClienteDto mapJsonToDto(ClienteJson pedidoJson) {
-		ClienteDto clienteDto = ClienteDto.builder()
+		return ClienteDto.builder()
 				.id(pedidoJson.getId())
 				.nome(pedidoJson.getNome())
 				.cpf(pedidoJson.getCpf())
 				.email(pedidoJson.getEmail())
 				.build();
-		return clienteDto;
 	}
 
 }
