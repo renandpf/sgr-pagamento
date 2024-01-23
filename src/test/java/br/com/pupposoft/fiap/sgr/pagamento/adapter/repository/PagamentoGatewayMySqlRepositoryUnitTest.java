@@ -1,11 +1,14 @@
 package br.com.pupposoft.fiap.sgr.pagamento.adapter.repository;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,6 +75,56 @@ class PagamentoGatewayMySqlRepositoryUnitTest {
 		
 		assertThrows(ErrorToAccessRepositoryException.class, () -> pagamentoGateway.criar(pagamentoDtoParam)) ;
 		verify(pagamentoRepository).save(any(PagamentoEntity.class));
+	}
+
+	@Test
+	void shouldSucessOnObterPorIdentificadorPagamento() {
+		
+		final String pagamentoExternoIdParam = getRandomString();
+		
+		
+		PagamentoEntity pagamentoEntityExistent = PagamentoEntity.builder()
+				.id(getRandomLong())
+				.identificadorPagamentoExterno(pagamentoExternoIdParam)
+				.valor(getRandomDouble())
+				.pedidoId(getRandomLong())
+				.build();
+		doReturn(Optional.of(pagamentoEntityExistent)).when(pagamentoRepository).findByIdentificadorPagamentoExterno(pagamentoExternoIdParam);
+		
+		Optional<PagamentoDto> pagamentoDtoOP = pagamentoGateway.obterPorIdentificadorPagamento(pagamentoExternoIdParam);
+		assertTrue(pagamentoDtoOP.isPresent());
+		
+		PagamentoDto pagamentoDto = pagamentoDtoOP.get();
+		
+		assertEquals(pagamentoEntityExistent.getId() , pagamentoDto.getId());
+		assertEquals(pagamentoExternoIdParam, pagamentoDto.getPagamentoExternoId());
+		assertEquals(pagamentoEntityExistent.getPedidoId() , pagamentoDto.getPedido().getId());
+		
+		verify(pagamentoRepository).findByIdentificadorPagamentoExterno(pagamentoExternoIdParam);
+	}
+	
+	@Test
+	void shouldSucessPagamentoNotFoundOnObterPorIdentificadorPagamento() {
+		
+		final String pagamentoExternoIdParam = getRandomString();
+		
+		doReturn(Optional.empty()).when(pagamentoRepository).findByIdentificadorPagamentoExterno(pagamentoExternoIdParam);
+		
+		Optional<PagamentoDto> pagamentoDtoOP = pagamentoGateway.obterPorIdentificadorPagamento(pagamentoExternoIdParam);
+		assertTrue(pagamentoDtoOP.isEmpty());
+		
+		verify(pagamentoRepository).findByIdentificadorPagamentoExterno(pagamentoExternoIdParam);
+	}
+	
+	@Test
+	void shouldErrorToAccessRepositoryExceptionOnObterPorIdentificadorPagamento() {
+		final String pagamentoExternoIdParam = getRandomString();
+		
+		doThrow(new RuntimeException()).when(pagamentoRepository).findByIdentificadorPagamentoExterno(pagamentoExternoIdParam);
+		
+		assertThrows(ErrorToAccessRepositoryException.class, () -> pagamentoGateway.obterPorIdentificadorPagamento(pagamentoExternoIdParam));
+		
+		verify(pagamentoRepository).findByIdentificadorPagamentoExterno(pagamentoExternoIdParam);
 	}
 	
 }
