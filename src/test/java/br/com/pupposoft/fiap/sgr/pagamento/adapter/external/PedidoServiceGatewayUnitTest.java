@@ -37,7 +37,7 @@ import br.com.pupposoft.fiap.starter.http.exception.HttpConnectorException;
 import br.com.pupposoft.fiap.test.databuilder.DataBuilderBase;
 
 @ExtendWith(MockitoExtension.class)
-class PedidoServiceGatewayIntTest {
+class PedidoServiceGatewayUnitTest {
 	
 	@InjectMocks
 	private PedidoGateway pedidoGateway = new PedidoServiceGateway();

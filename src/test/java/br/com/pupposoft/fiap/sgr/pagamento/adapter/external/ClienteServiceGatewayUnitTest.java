@@ -32,7 +32,7 @@ import br.com.pupposoft.fiap.starter.http.dto.HttpConnectDto;
 import br.com.pupposoft.fiap.starter.http.exception.HttpConnectorException;
 
 @ExtendWith(MockitoExtension.class)
-class ClienteServiceGatewayIntTest {
+class ClienteServiceGatewayUnitTest {
 	
 	@InjectMocks
 	private ClienteGateway clienteGateway = new ClienteServiceGateway();
