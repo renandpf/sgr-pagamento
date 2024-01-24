@@ -9,5 +9,5 @@ public class ErrorToAccessRepositoryException extends SystemBaseException {
 	
 	private final String code = "sgr.errorToAccessRepository";
 	private final String message = "Erro ao acessar repositório de dados";
-	private final Integer httpStatus = 400;
+	private final Integer httpStatus = 500;
 }
