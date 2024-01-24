@@ -28,13 +28,13 @@ public class AtualizarPedidoUseCaseImpl implements AtualizarStatusPagamentoUseCa
     public void atualizar(PlataformaPagamento plataformaPagamento, String identificadorPagamento) {
 		log.trace("Start plataformaPagamento={}, identificadorPagamento={}", plataformaPagamento, identificadorPagamento);
 		
-        PagamentoDto pagamentoDto = obtemPedidoPorIdentificadorPagamento(identificadorPagamento);
+        PagamentoDto pagamentoDto = obtemPagamentoPorIdentificadorPagamento(identificadorPagamento);
         PedidoDto pedidoDto = getPedidoById(pagamentoDto.getPedido().getId());
         
         StatusPedido newStatus = plataformaPagamentoFactory.obter(plataformaPagamento).obtemStatus(identificadorPagamento);
         
         Pedido pedido = Pedido.builder().id(pedidoDto.getId()).status(pedidoDto.getStatus()).build();
-        pedido.setStatus(newStatus);//Aplica as regras de negócio que estão dentro do domain
+        pedido.setStatus(newStatus);//TODO: Deve chamar um endpoint do pedido-service para validar a mudança de status
 
         PedidoDto pedidoDtoStatusPago = PedidoDto.builder()
         		.id(pedido.getId())
@@ -58,8 +58,8 @@ public class AtualizarPedidoUseCaseImpl implements AtualizarStatusPagamentoUseCa
 	}
 
 
-    private PagamentoDto obtemPedidoPorIdentificadorPagamento(String identificadorPagamento) {
-        Optional<PagamentoDto> pagamentoDtoOp = this.pagamentoGateway.obterPorIdentificadorPagamento(identificadorPagamento);
+    private PagamentoDto obtemPagamentoPorIdentificadorPagamento(String identificadorPagamento) {
+        Optional<PagamentoDto> pagamentoDtoOp = pagamentoGateway.obterPorIdentificadorPagamento(identificadorPagamento);
         if (pagamentoDtoOp.isEmpty()) {
             log.warn("Pagamento não encontrado. identificadorPagamento={}", identificadorPagamento);
             throw new PagamentoNaoEncontradoException();

@@ -68,12 +68,11 @@ public class PagamentoGatewayMySqlRepository implements PagamentoGateway {
 	}
 
 	private PagamentoDto mapEntityToDto(String pagamentoExternoId, PagamentoEntity pagamentoEntity) {
-		PagamentoDto pagamentoDto = PagamentoDto.builder()
+		return PagamentoDto.builder()
 				.id(pagamentoEntity.getId())
 				.pagamentoExternoId(pagamentoExternoId)
 				.pedido(PedidoDto.builder().id(pagamentoEntity.getPedidoId()).build())
 				.build();
-		return pagamentoDto;
 	}
 
 }
