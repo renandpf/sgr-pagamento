@@ -8,9 +8,7 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.usecase.AtualizarStatusPagamento
 import br.com.pupposoft.fiap.sgr.pagamento.core.usecase.EfetuarPagamentoUseCase;
 import br.com.pupposoft.fiap.sgr.pagamento.core.usecase.ObterPagamentoUsecase;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @AllArgsConstructor
 public class PagamentoController {
 	
