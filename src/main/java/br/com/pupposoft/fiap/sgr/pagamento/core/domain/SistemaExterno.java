@@ -8,5 +8,5 @@ import lombok.ToString;
 @Builder
 @ToString
 public class SistemaExterno {
-	public String identificadorPagamento;
+	private String identificadorPagamento;
 }

@@ -1,7 +1,6 @@
 package br.com.pupposoft.fiap.starter.http;
 
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -15,48 +14,13 @@ import reactor.core.publisher.Mono;
 @Component
 public class HttpConnect implements HttpConnectGateway {
 
-	public String postWithRequestBodyMultipart(HttpConnectDto dto) {
-		try {
-			log.trace("Start dto={}", dto);
-			
-			String url = dto.getUrl();
-			
-			if (dto.getUrlParameters() != null) {
-				url = url.concat(dto.getUrlParameters());
-			} 
-			
-			MultiValueMap<String, String> formData = dto.getFormData();
-			
-			final WebClient webClient = WebClient.create();
-			
-			String response = 
-					webClient.post()
-					.uri(url)
-					.body(Mono.just(formData), MultiValueMap.class)
-					.retrieve()
-					.bodyToMono(String.class)
-					.block();
-			
-			log.trace("End response={}", response);
-			
-			return response;
-		} catch (Exception e) {
-			throw processException(e);
-		}
-
-	}
-
 	public String postWhithRequestBody(HttpConnectDto dto) {
 		try {
 			log.trace("Start dto={}", dto);
 			
-			String url = dto.getUrl();
+			String url = getQueryParam(dto); 
 			
-			if (dto.getUrlParameters() != null) {
-				url = url.concat("?").concat(dto.getUrlParameters());
-			} 
-			
-			String token = dto.getHeaders() == null ? "" : dto.getHeaders().get("Authorization");
+			String token = getToken(dto);
 			
 			final WebClient webClient = WebClient.create();
 			
@@ -70,7 +34,6 @@ public class HttpConnect implements HttpConnectGateway {
 					.bodyToMono(String.class)
 					.block();
 			
-			
 			log.trace("End response={}", response);
 			
 			return response;
@@ -79,15 +42,12 @@ public class HttpConnect implements HttpConnectGateway {
 		}
 
 	}
-	
+
 	public String get(HttpConnectDto dto) {
 		try {
 			log.trace("Start dto={}", dto);
 			
-			String url = dto.getUrl();
-			if(dto.getQueryParams() != null) {
-				url = url.concat(dto.getQueryParamUrl());
-			}
+			String url = getQueryParam(dto);
 			
 			final WebClient webClient = WebClient.create();
 			
@@ -114,11 +74,7 @@ public class HttpConnect implements HttpConnectGateway {
 		try {
 			log.trace("Start dto={}", dto);
 			
-			String url = dto.getUrl();
-			
-			if (dto.getUrlParameters() != null) {
-				url = url.concat("?").concat(dto.getUrlParameters());
-			} 
+			String url = getQueryParam(dto); 
 			
 			final WebClient webClient = WebClient.create();
 			
@@ -145,8 +101,7 @@ public class HttpConnect implements HttpConnectGateway {
 		int statusCode = 500;
 		String message = e.getMessage();
 		
-		if(e instanceof WebClientResponseException) {
-			WebClientResponseException ex = (WebClientResponseException) e;
+		if(e instanceof WebClientResponseException ex) {
 			statusCode = ex.getStatusCode().value();
 			message = ex.getResponseBodyAsString();
 			
@@ -155,6 +110,14 @@ public class HttpConnect implements HttpConnectGateway {
 		
 		log.error(e.getMessage(), e);
 		return new HttpConnectorException(statusCode, message);
+	}
+
+	private String getQueryParam(HttpConnectDto dto) {
+		return dto.getQueryParams() == null ? dto.getUrl() : dto.getUrl().concat(dto.getQueryParamUrl());
+	}
+	
+	private String getToken(HttpConnectDto dto) {
+		return dto.getHeaders() == null ? "" : dto.getHeaders().get("Authorization");
 	}
 
 

@@ -13,11 +13,18 @@ class ItemUnitTest {
 	void shouldSucessOnGetValorTotal() {
 		
 		Item item = Item.builder()
+				.id(1L)
 				.quantidade(3L)
 				.valorUnitario(new BigDecimal("5"))
 				.build();
 		
 		assertEquals(new BigDecimal("15"), item.getValorTotal());
+		
+		assertEquals(1L, item.getId());
+		assertEquals(3L, item.getQuantidade());
+		assertEquals(new BigDecimal("5"), item.getValorUnitario());
+		
+		item.toString();
 	}
 	
 }

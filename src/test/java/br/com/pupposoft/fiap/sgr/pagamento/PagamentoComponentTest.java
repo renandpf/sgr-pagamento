@@ -6,6 +6,7 @@ import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomLo
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomString;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -40,8 +41,8 @@ import br.com.pupposoft.fiap.starter.http.HttpConnect;
 import br.com.pupposoft.fiap.test.databuilder.DataBuilderBase;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SgrPagamentoService.class)
-@TestPropertySource(locations = "classpath:application-componenttest.properties")
-@ActiveProfiles("componenttest")
+@TestPropertySource(locations = "classpath:application-test.properties")
+@ActiveProfiles("test")
 @WireMockTest
 @Disabled
 class PagamentoComponentTest extends ComponentTestBase {
@@ -79,7 +80,10 @@ class PagamentoComponentTest extends ComponentTestBase {
 		final String responseBodyStr = "{\"id\": "+ idPagamentoExterno +"  }";
 		final String accessToken = getRandomString();
 		final String path = "/v1/payments";
+		final long pedidoId = DataBuilderBase.getRandomLong();
 		
+		final String pedidoResponseBodyStr = "{\"id\": "+ pedidoId+" }";
+		stubFor(get("/sgr/pedidos/" + pedidoId).willReturn(okJson(pedidoResponseBodyStr)));
 		stubFor(post(path).willReturn(okJson(responseBodyStr)));
 
 		setField(plataformaPagamentoGateway, "baseUrl", wmRuntimeInfo.getHttpBaseUrl());
@@ -89,7 +93,7 @@ class PagamentoComponentTest extends ComponentTestBase {
 		
 		createPlataformPagamentoMP();
 		
-		PagamentoJson pagamentoJsonRequest = PagamentoJson.builder().pedidoId(DataBuilderBase.getRandomLong()).forma("PIX").build();
+		PagamentoJson pagamentoJsonRequest = PagamentoJson.builder().pedidoId(pedidoId).forma("PIX").build();
 		PagamentoJson pagamentoJsonResponse = pagamentoApiController.efetuar(pagamentoJsonRequest);
 		
 		assertEquals(idPagamentoExterno+"", pagamentoJsonResponse.getPagamentoExternoId());
