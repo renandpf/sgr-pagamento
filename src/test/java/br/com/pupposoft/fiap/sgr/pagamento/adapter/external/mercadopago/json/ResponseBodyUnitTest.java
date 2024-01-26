@@ -16,20 +16,14 @@ class ResponseBodyUnitTest {
 				.build(); 
 		
 		assertEquals(StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO, responseBody.mapDomainStatus());
-	}
-	
-	@Test
-	void mapDomainStatusShouldAguardandoConfirmacaoPagamentoWithInProcess() {
-		ResponseBody responseBody = ResponseBody.builder()
+		
+		responseBody = ResponseBody.builder()
 				.status("in_process")
 				.build(); 
 		
 		assertEquals(StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO, responseBody.mapDomainStatus());
-	}
-	
-	@Test
-	void mapDomainStatusShouldAguardandoConfirmacaoPagamentoWithAuthorized() {
-		ResponseBody responseBody = ResponseBody.builder()
+		
+		responseBody = ResponseBody.builder()
 				.status("authorized")
 				.build(); 
 		

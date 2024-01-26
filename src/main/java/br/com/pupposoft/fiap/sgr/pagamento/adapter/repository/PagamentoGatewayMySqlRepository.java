@@ -2,7 +2,6 @@ package br.com.pupposoft.fiap.sgr.pagamento.adapter.repository;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PagamentoEntity;
@@ -11,20 +10,19 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PagamentoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ErrorToAccessRepositoryException;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PagamentoGateway;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Repository
+@AllArgsConstructor
 public class PagamentoGatewayMySqlRepository implements PagamentoGateway {
 
-	@Autowired
 	private PagamentoEntityRepository pagamentoRepository;
 
 	@Override
 	public Long criar(PagamentoDto pagamentoDto) {
 		try {
-			log.trace("Start pagamento={}", pagamentoDto);
-
 			PagamentoEntity pagamentoEntity = PagamentoEntity.builder()
 					.identificadorPagamentoExterno(pagamentoDto.getPagamentoExternoId())
 					.valor(pagamentoDto.getValor())
@@ -32,10 +30,7 @@ public class PagamentoGatewayMySqlRepository implements PagamentoGateway {
 					.build();
 
 			PagamentoEntity pagamentoEntityCreated = pagamentoRepository.save(pagamentoEntity);
-			Long pagamentoEntityCreatedId = pagamentoEntityCreated.getId();
-
-			log.trace("End pagamentoEntityCreatedId={}", pagamentoEntityCreatedId);
-			return pagamentoEntityCreatedId;
+			return pagamentoEntityCreated.getId();
 		}
 		catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -46,8 +41,6 @@ public class PagamentoGatewayMySqlRepository implements PagamentoGateway {
 	@Override
 	public Optional<PagamentoDto> obterPorIdentificadorPagamento(String pagamentoExternoId) {
 		try {
-			log.trace("Start pagamentoExternoId={}", pagamentoExternoId);
-
 
 			Optional<PagamentoEntity> pagamentoEntityOp = pagamentoRepository.findByIdentificadorPagamentoExterno(pagamentoExternoId);
 
@@ -58,7 +51,6 @@ public class PagamentoGatewayMySqlRepository implements PagamentoGateway {
 				pagamentoDtoOp = Optional.of(pagamentoDto);
 			}
 
-			log.trace("End pagamentoDtoOp={}", pagamentoDtoOp);
 			return pagamentoDtoOp;
 		}
 		catch (Exception e) {

@@ -29,7 +29,7 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PlataformaPagamentoConfi
 class PlataformaPagamentoConfigMySqlRepositoryUnitTest {
 
 	@InjectMocks
-	private PlataformaPagamentoConfigGateway pagamentoGateway = new PlataformaPagamentoConfigMySqlRepository();
+	private PlataformaPagamentoConfigGateway pagamentoGateway = new PlataformaPagamentoConfigMySqlRepository(null);
 	
 	@Mock
 	private PlataformaPagamentoEntityRepository plataformaPagamentoEntityRepository;

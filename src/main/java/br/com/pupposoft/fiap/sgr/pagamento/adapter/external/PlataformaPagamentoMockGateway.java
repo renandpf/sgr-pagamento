@@ -23,17 +23,11 @@ public class PlataformaPagamentoMockGateway extends PlataformaPagamentoGateway {
 	@Override
 	public EnviaPagamentoReturnDto enviarPagamento(EnviaPagamentoExternoParamDto dto) {
         try {
-            log.trace("Start dto={}", dto);
             log.warn("### MOCK ###");
 
-            final EnviaPagamentoReturnDto returnDto = 
-            		EnviaPagamentoReturnDto.builder()
+            return EnviaPagamentoReturnDto.builder()
             		.pagamentoExternoId(UUID.randomUUID().toString())
             		.build();
-
-            log.trace("End returnDto={}", returnDto);
-
-            return returnDto;
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -43,13 +37,11 @@ public class PlataformaPagamentoMockGateway extends PlataformaPagamentoGateway {
 
 	@Override
 	public StatusPedido obtemStatus(String statusPagamento) {
-		log.trace("Start statusPagamento={}", statusPagamento);
 		log.warn("### MOCK ###");
 		StatusPedido statusPedido = StatusPedido.PAGAMENTO_INVALIDO;
-        if (statusPagamento == "pago_sucesso") {
+        if (statusPagamento.equals("pago_sucesso")) {
             statusPedido = StatusPedido.PAGO;
         }
-        log.trace("End statusPedido={}", statusPedido);
         return statusPedido;	
       }
 }

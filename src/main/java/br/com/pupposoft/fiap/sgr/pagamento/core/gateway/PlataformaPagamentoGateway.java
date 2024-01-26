@@ -6,7 +6,7 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.EnviaPagamentoExternoPa
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.EnviaPagamentoReturnDto;
 
 public abstract class PlataformaPagamentoGateway {
-	public PlataformaPagamento plataformaPagamentoExterna;
+	protected PlataformaPagamento plataformaPagamentoExterna;
 	
 	public abstract EnviaPagamentoReturnDto enviarPagamento(EnviaPagamentoExternoParamDto dto);
 	public abstract StatusPedido obtemStatus(String identificadorPagamento);

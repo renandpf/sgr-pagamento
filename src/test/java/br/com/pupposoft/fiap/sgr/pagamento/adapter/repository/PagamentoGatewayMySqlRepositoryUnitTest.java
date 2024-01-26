@@ -29,7 +29,7 @@ import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.*;
 class PagamentoGatewayMySqlRepositoryUnitTest {
 
 	@InjectMocks
-	private PagamentoGateway pagamentoGateway = new PagamentoGatewayMySqlRepository();
+	private PagamentoGateway pagamentoGateway = new PagamentoGatewayMySqlRepository(null);
 	
 	@Mock
 	private PagamentoEntityRepository pagamentoRepository;

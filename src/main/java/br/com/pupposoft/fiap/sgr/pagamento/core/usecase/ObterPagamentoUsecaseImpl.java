@@ -16,14 +16,11 @@ public class ObterPagamentoUsecaseImpl implements ObterPagamentoUsecase {
 	
 	@Override
 	public PagamentoDto obterPorIdentificadorPagamento(String identificadorPagamento) {
-		log.trace("Start identificadorPagamento={}", identificadorPagamento);
 		Optional<PagamentoDto> pagamentoDtoOp = pagamentoGateway.obterPorIdentificadorPagamento(identificadorPagamento);
 		if(pagamentoDtoOp.isEmpty()) {
 			log.warn("Pagamento não foi encontrado. identificadorPagamento={}", identificadorPagamento);
 			throw new PagamentoNaoEncontradoException();
 		}
-		PagamentoDto pagamentoDto = pagamentoDtoOp.get();
-		log.trace("End pagamentoDto={}", pagamentoDto);
-		return pagamentoDto;
+		return pagamentoDtoOp.get();
 	}
 }

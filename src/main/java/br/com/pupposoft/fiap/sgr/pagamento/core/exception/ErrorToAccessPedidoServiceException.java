@@ -7,7 +7,7 @@ import lombok.Getter;
 public class ErrorToAccessPedidoServiceException extends SystemBaseException {
 	private static final long serialVersionUID = 2722650125602005636L;
 	
-	private String code = "sgr.errorToAccessPedidoService";
-	private String message = "Erro ao acessar pedido service";
-	private Integer httpStatus = 500;
+	private String code = "sgr.errorToAccessPedidoService";//NOSONAR
+	private String message = "Erro ao acessar pedido service";//NOSONAR
+	private Integer httpStatus = 500;//NOSONAR
 }

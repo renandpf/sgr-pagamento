@@ -7,9 +7,9 @@ import lombok.Getter;
 public class HttpConnectorException extends SystemBaseException {
 	private static final long serialVersionUID = -7731178336165557046L;
 	
-	private final String code = "sgr.httpConnectorError";
-	private String message;
-	private Integer httpStatus;
+	private final String code = "sgr.httpConnectorError";//NOSONAR
+	private String message;//NOSONAR
+	private Integer httpStatus;//NOSONAR
 	
 	public HttpConnectorException(Integer httpStatus, String message) {
 		this.httpStatus = httpStatus;

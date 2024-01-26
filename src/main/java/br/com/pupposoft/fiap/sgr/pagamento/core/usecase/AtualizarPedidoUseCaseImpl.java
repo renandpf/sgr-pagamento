@@ -26,15 +26,13 @@ public class AtualizarPedidoUseCaseImpl implements AtualizarStatusPagamentoUseCa
 	
 	@Override
     public void atualizar(PlataformaPagamento plataformaPagamento, String identificadorPagamento) {
-		log.trace("Start plataformaPagamento={}, identificadorPagamento={}", plataformaPagamento, identificadorPagamento);
-		
         PagamentoDto pagamentoDto = obtemPagamentoPorIdentificadorPagamento(identificadorPagamento);
         PedidoDto pedidoDto = getPedidoById(pagamentoDto.getPedido().getId());
         
         StatusPedido newStatus = plataformaPagamentoFactory.obter(plataformaPagamento).obtemStatus(identificadorPagamento);
         
         Pedido pedido = Pedido.builder().id(pedidoDto.getId()).status(pedidoDto.getStatus()).build();
-        pedido.setStatus(newStatus);//TODO: Deve chamar um endpoint do pedido-service para validar a mudança de status
+        pedido.setStatus(newStatus);//Deve chamar um endpoint do pedido-service para validar a mudança de status
 
         PedidoDto pedidoDtoStatusPago = PedidoDto.builder()
         		.id(pedido.getId())
@@ -42,8 +40,6 @@ public class AtualizarPedidoUseCaseImpl implements AtualizarStatusPagamentoUseCa
         		.build();
 
         this.pedidoGateway.alterarStatus(pedidoDtoStatusPago);
-
-        log.trace("End");
     }
 
 

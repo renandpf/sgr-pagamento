@@ -13,30 +13,27 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PagamentoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PedidoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PlataformaPagamentoConfigGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PlataformaPagamentoGateway;
-import br.com.pupposoft.fiap.sgr.pagamento.core.usecase.AtualizarStatusPagamentoUseCase;
 import br.com.pupposoft.fiap.sgr.pagamento.core.usecase.AtualizarPedidoUseCaseImpl;
+import br.com.pupposoft.fiap.sgr.pagamento.core.usecase.AtualizarStatusPagamentoUseCase;
 import br.com.pupposoft.fiap.sgr.pagamento.core.usecase.EfetuarPagamentoUseCase;
 import br.com.pupposoft.fiap.sgr.pagamento.core.usecase.EfetuarPagamentoUseCaseImpl;
 import br.com.pupposoft.fiap.sgr.pagamento.core.usecase.ObterPagamentoUsecase;
 import br.com.pupposoft.fiap.sgr.pagamento.core.usecase.ObterPagamentoUsecaseImpl;
 import br.com.pupposoft.fiap.sgr.pagamento.core.usecase.PlataformaPagamentoFactory;
+import lombok.AllArgsConstructor;
 
 @Configuration
+@AllArgsConstructor
 public class PagamentoDIConfiguration {
 
-	@Autowired
 	private PedidoGateway pedidoGateway;
 	
-	@Autowired
 	private ClienteGateway clienteGateway;
 	
-	@Autowired
 	private PagamentoGateway pagamentoGateway;
 	
-	@Autowired
 	private PlataformaPagamentoConfigGateway plataformaPagamentoConfigGateway;
 	
-	@Autowired
 	private List<PlataformaPagamentoGateway> plataformaPagamentoGatewayList;
 
 	@Bean
