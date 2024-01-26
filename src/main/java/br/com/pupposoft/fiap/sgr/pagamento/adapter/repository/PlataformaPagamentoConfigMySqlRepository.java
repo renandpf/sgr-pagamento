@@ -2,25 +2,24 @@ package br.com.pupposoft.fiap.sgr.pagamento.adapter.repository;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PlataformaPagamentoEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.StatusPlataformaPagamento;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.repository.PlataformaPagamentoEntityRepository;
-
 import br.com.pupposoft.fiap.sgr.pagamento.core.domain.PlataformaPagamento;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.PlataformaPagamentoConfigParamsDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.PlataformaPagamentoConfigReturnDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ErrorToAccessRepositoryException;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PlataformaPagamentoConfigGateway;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Repository
+@AllArgsConstructor
 public class PlataformaPagamentoConfigMySqlRepository implements PlataformaPagamentoConfigGateway {
 	
-	@Autowired
 	private PlataformaPagamentoEntityRepository plataformaPagamentoEntityRepository;
 	
 	@Override
@@ -33,7 +32,6 @@ public class PlataformaPagamentoConfigMySqlRepository implements PlataformaPagam
 			
 			if(plataformaPagamentoEntityOp.isEmpty()) {
 				log.warn("Nenhuma plataforma de pagamento ativa! Verifique as configurações (## UTILIZANDO MOCK ##)");
-				//TODO: Deveria lançar exceção 
 			} else {
 				plataformaPagamento = PlataformaPagamento.valueOf(plataformaPagamentoEntityOp.get().getCode());
 			}

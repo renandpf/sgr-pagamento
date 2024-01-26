@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.pupposoft.fiap.sgr.pagamento.adapter.external.json.ClienteJson;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.ClienteDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ErrorToAccessPedidoServiceException;
-import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.ClienteGateway;
 import br.com.pupposoft.fiap.starter.http.HttpConnectGateway;
 import br.com.pupposoft.fiap.starter.http.dto.HttpConnectDto;
 import br.com.pupposoft.fiap.starter.http.exception.HttpConnectorException;
@@ -35,7 +34,7 @@ import br.com.pupposoft.fiap.starter.http.exception.HttpConnectorException;
 class ClienteServiceGatewayUnitTest {
 	
 	@InjectMocks
-	private ClienteGateway clienteGateway = new ClienteServiceGateway();
+	private ClienteServiceGateway clienteGateway;
 	
 	@Mock
 	private HttpConnectGateway httpConnectGateway;

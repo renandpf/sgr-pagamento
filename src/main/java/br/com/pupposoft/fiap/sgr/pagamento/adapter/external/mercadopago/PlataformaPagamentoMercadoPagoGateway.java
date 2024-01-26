@@ -3,7 +3,6 @@ package br.com.pupposoft.fiap.sgr.pagamento.adapter.external.mercadopago;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +19,15 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ErrorToAccessPagamento
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PlataformaPagamentoGateway;
 import br.com.pupposoft.fiap.starter.http.HttpConnectGateway;
 import br.com.pupposoft.fiap.starter.http.dto.HttpConnectDto;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 public class PlataformaPagamentoMercadoPagoGateway extends PlataformaPagamentoGateway {
+
+	private static final String URL_PATH = "/v1/payments";//NOSONAR
 
 	@Value("${sgr.pagamento-service.plataforma-pagamento.mercado-pago.base-url}")
 	private String baseUrl;
@@ -32,10 +35,8 @@ public class PlataformaPagamentoMercadoPagoGateway extends PlataformaPagamentoGa
 	@Value("${sgr.pagamento-service.plataforma-pagamento.mercado-pago.access-token}")
 	private String accessToken;
 	
-	@Autowired
 	private HttpConnectGateway httpConnectGateway;
 	
-	@Autowired
 	private ObjectMapper objectMapper;
 	
 	public PlataformaPagamentoMercadoPagoGateway() {
@@ -48,7 +49,7 @@ public class PlataformaPagamentoMercadoPagoGateway extends PlataformaPagamentoGa
         try {
             log.trace("Start paramsDto={}", paramsDto);
 
-            final String urlPath = "/v1/payments";
+            final String urlPath = URL_PATH;
             final String url = baseUrl + urlPath;
             
             RequestBodyJson rBody = createRequestBody(paramsDto);
@@ -89,7 +90,7 @@ public class PlataformaPagamentoMercadoPagoGateway extends PlataformaPagamentoGa
 		//https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_id/get
 		try {
 			log.trace("Start identificadorPagamento={}", identificadorPagamento);
-            final String urlPath = "/v1/payments";
+            final String urlPath = URL_PATH;
             final String url = baseUrl + urlPath + "/" + identificadorPagamento;
             
             Map<String, String> headers = new HashMap<>();
@@ -124,7 +125,7 @@ public class PlataformaPagamentoMercadoPagoGateway extends PlataformaPagamentoGa
 				.lastName(paramsDto.getSobrenomeCliente())
 				.build();
 		
-		RequestBodyJson rBody = RequestBodyJson.builder()
+		return RequestBodyJson.builder()
 				.description(paramsDto.getNomeProduto())
 				.installments(paramsDto.getParcelas())
 				.payer(payer)
@@ -133,7 +134,6 @@ public class PlataformaPagamentoMercadoPagoGateway extends PlataformaPagamentoGa
 				.transactionAmount(paramsDto.getValor())
 				.issuerId("0")
 				.build();
-		return rBody;
 	}
 	
 }

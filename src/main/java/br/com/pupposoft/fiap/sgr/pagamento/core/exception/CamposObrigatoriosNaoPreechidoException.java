@@ -7,9 +7,9 @@ import lombok.Getter;
 public class CamposObrigatoriosNaoPreechidoException extends SystemBaseException {
 	private static final long serialVersionUID = -4204425173101901157L;
     
-	private String code = "sgr.camposObrigatoriosNaoPreenchido";
-    private String message;
-    private Integer httpStatus = 400;
+	private String code = "sgr.camposObrigatoriosNaoPreenchido";//NOSONAR
+    private String message;//NOSONAR
+    private Integer httpStatus = 400;//NOSONAR
     
 	public CamposObrigatoriosNaoPreechidoException(String message) {
 		this.message = message;

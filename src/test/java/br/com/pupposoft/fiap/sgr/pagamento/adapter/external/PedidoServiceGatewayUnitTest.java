@@ -30,7 +30,6 @@ import br.com.pupposoft.fiap.sgr.pagamento.adapter.external.json.PedidoJson;
 import br.com.pupposoft.fiap.sgr.pagamento.core.domain.StatusPedido;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ErrorToAccessPedidoServiceException;
-import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PedidoGateway;
 import br.com.pupposoft.fiap.starter.http.HttpConnectGateway;
 import br.com.pupposoft.fiap.starter.http.dto.HttpConnectDto;
 import br.com.pupposoft.fiap.starter.http.exception.HttpConnectorException;
@@ -40,7 +39,7 @@ import br.com.pupposoft.fiap.test.databuilder.DataBuilderBase;
 class PedidoServiceGatewayUnitTest {
 	
 	@InjectMocks
-	private PedidoGateway pedidoGateway = new PedidoServiceGateway();
+	private PedidoServiceGateway pedidoGateway;
 	
 	@Mock
 	private HttpConnectGateway httpConnectGateway;

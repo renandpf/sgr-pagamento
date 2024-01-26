@@ -21,17 +21,12 @@ public class PlataformaPagamentoFactory {
 	private List<PlataformaPagamentoGateway> plataformaPagamentoGatewayList;
 	
 	public PlataformaPagamentoGateway obter() {
-		log.trace("Start");
 		PlataformaPagamentoConfigReturnDto returnDto = plataformaPagamentoConfigGateway.obter(PlataformaPagamentoConfigParamsDto.builder().build());
 		
-		PlataformaPagamentoGateway plataformaPagamentoGateway = obter(returnDto.getPlataformaPagamento());
-		
-		log.trace("End plataformaPagamentoGateway={}", plataformaPagamentoGateway);
-		return plataformaPagamentoGateway;
+		return obter(returnDto.getPlataformaPagamento());
 	}
 
 	public PlataformaPagamentoGateway obter(PlataformaPagamento plataformaPagamento) {
-		log.trace("Start plataformaPagamento={}", plataformaPagamento);
 		
 		Optional<PlataformaPagamentoGateway> plataformaPagamentoGatewayOp = plataformaPagamentoGatewayList.stream().filter(pp -> pp.isElegivel(plataformaPagamento)).findAny();
 		
@@ -40,9 +35,6 @@ public class PlataformaPagamentoFactory {
 			throw new PlataformaPagamentoGatewayNotFoundException();
 		}
 		
-		PlataformaPagamentoGateway plataformaPagamentoGateway = plataformaPagamentoGatewayOp.get();
-		
-		log.trace("End plataformaPagamentoGateway={}", plataformaPagamentoGateway);
-		return plataformaPagamentoGateway;
+		return plataformaPagamentoGatewayOp.get();
 	}
 }

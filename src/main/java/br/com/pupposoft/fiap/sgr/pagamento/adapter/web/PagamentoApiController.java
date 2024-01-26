@@ -1,6 +1,5 @@
 package br.com.pupposoft.fiap.sgr.pagamento.adapter.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,15 +18,16 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PagamentoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.EfetuarPagamentoParamDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.EfetuarPagamentoReturnDto;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("sgr/pagamentos")
+@AllArgsConstructor
 public class PagamentoApiController {
 	
-	@Autowired
     private PagamentoController pagamentoController;
 	
 	@PostMapping("efetuar")
@@ -86,7 +86,7 @@ public class PagamentoApiController {
         .build();
 	}
 	
-	//TODO: tende a crescer. Ideal ser um factory ou Map
+	//tende a crescer. Ideal ser um factory ou Map
 	private PlataformaPagamento mapPlataformaTerceiro(String plataformaPagamento) {
 		PlataformaPagamento plataformaPagamentoDomain = PlataformaPagamento.MOCK;
         if(plataformaPagamento.equals("mercado-pago")) {

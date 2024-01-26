@@ -18,16 +18,16 @@ public class ResponseBody {
 	
 	
 	public StatusPedido mapDomainStatus() {
-        StatusPedido status = StatusPedido.PAGAMENTO_INVALIDO;
+        StatusPedido statusParam = StatusPedido.PAGAMENTO_INVALIDO;
         
 		if(this.status.equals("pending") || this.status.equals("in_process") || this.status.equals("authorized")) {
-			status = StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO;
+			statusParam = StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO;
 			
 		} else if(this.status.equals("approved")) {
-			status = StatusPedido.PAGO;
+			statusParam = StatusPedido.PAGO;
 			
 		} 
 		
-		return status;
+		return statusParam;
 	}
 }

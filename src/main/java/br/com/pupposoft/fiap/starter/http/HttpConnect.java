@@ -14,9 +14,13 @@ import reactor.core.publisher.Mono;
 @Component
 public class HttpConnect implements HttpConnectGateway {
 
+	private static final String AUTHORIZATION_KEY = "Authorization";
+	private static final String CONTENT_TYPE_VALUE = "application/json";
+	private static final String CONTENT_TYPE_KEY = "Content-Type";
+
 	public String postWhithRequestBody(HttpConnectDto dto) {
 		try {
-			log.trace("Start dto={}", dto);
+			log.trace("Start dto={}", dto);//NOSONAR
 			
 			String url = getQueryParam(dto); 
 			
@@ -28,13 +32,13 @@ public class HttpConnect implements HttpConnectGateway {
 					webClient.post()
 					.uri(url)
 					.body(Mono.just(dto.getRequestBody()), dto.getRequestBody().getClass())
-					.header("Content-Type", "application/json")
-					.header("Authorization", token)
+					.header(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE)
+					.header(AUTHORIZATION_KEY, token)
 					.retrieve()
 					.bodyToMono(String.class)
 					.block();
 			
-			log.trace("End response={}", response);
+			log.trace("End response={}", response);//NOSONAR
 			
 			return response;
 		} catch (Exception e) {
@@ -51,13 +55,13 @@ public class HttpConnect implements HttpConnectGateway {
 			
 			final WebClient webClient = WebClient.create();
 			
-			String token = dto.getHeaders() == null ? "" : dto.getHeaders().get("Authorization");
+			String token = dto.getHeaders() == null ? "" : dto.getHeaders().get(AUTHORIZATION_KEY);
 			
 			ResponseSpec responseSpec = 
 					webClient.get()
 					.uri(url)
-					.header("Content-Type", "application/json")
-					.header("Authorization", token)
+					.header(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE)
+					.header(AUTHORIZATION_KEY, token)
 					.retrieve();
 			
 			String response = responseSpec.bodyToMono(String.class).block();
@@ -82,7 +86,7 @@ public class HttpConnect implements HttpConnectGateway {
 					webClient.patch()
 					.uri(url)
 					.body(Mono.just(dto.getRequestBody()), dto.getRequestBody().getClass())
-					.header("Content-Type", "application/json")
+					.header(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE)
 					.retrieve()
 					.bodyToMono(String.class)
 					.block();
@@ -117,7 +121,7 @@ public class HttpConnect implements HttpConnectGateway {
 	}
 	
 	private String getToken(HttpConnectDto dto) {
-		return dto.getHeaders() == null ? "" : dto.getHeaders().get("Authorization");
+		return dto.getHeaders() == null ? "" : dto.getHeaders().get(AUTHORIZATION_KEY);
 	}
 
 

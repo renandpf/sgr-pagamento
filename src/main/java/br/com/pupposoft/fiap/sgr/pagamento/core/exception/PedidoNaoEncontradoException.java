@@ -7,7 +7,7 @@ import lombok.Getter;
 public class PedidoNaoEncontradoException extends SystemBaseException {
     private static final long serialVersionUID = -7939248652548082757L;
     
-	private String code = "sgr.pedidoNotFound";
-    private String message = "Pedido não foi encontrado";
-    private Integer httpStatus = 404;
+	private String code = "sgr.pedidoNotFound";//NOSONAR
+    private String message = "Pedido não foi encontrado";//NOSONAR
+    private Integer httpStatus = 404;//NOSONAR
 }

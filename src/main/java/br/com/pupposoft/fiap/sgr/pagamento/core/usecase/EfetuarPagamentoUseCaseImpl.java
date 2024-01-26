@@ -39,8 +39,6 @@ public class EfetuarPagamentoUseCaseImpl implements EfetuarPagamentoUseCase {
 	
 	@Override
 	public EfetuarPagamentoReturnDto efetuar(EfetuarPagamentoParamDto paramsDto) {
-        log.trace("Start dto={}", paramsDto);
-
         validaCamposObrigatorios(paramsDto.getPagamento());
 
         PedidoDto pedidoDto = obtemPedidoVerificandoSeEleExiste(paramsDto.getPagamento().getPedido().getId());
@@ -53,20 +51,18 @@ public class EfetuarPagamentoUseCaseImpl implements EfetuarPagamentoUseCase {
         
         String pagamentoExternoId = enviaPagamentoSistemaExterno(paramsDto, pedidoDto.getValor(), clienteDto);
         
-        //TODO: deve ocorrer rollback em caso de falha no passo de alterarStatus do serviço
+        //deve ocorrer rollback em caso de falha no passo de alterarStatus do serviço
         Long idPagamento = this.pagamentoGateway.criar(paramsDto.getPagamento());
 
         pedidoGateway.alterarStatus(pedidoDto);
 
-        EfetuarPagamentoReturnDto returnDto = EfetuarPagamentoReturnDto.builder().pagamentoId(idPagamento).pagamentoExternoId(pagamentoExternoId).build();
-        log.trace("End returnDto={}", returnDto);
-        return returnDto;
+        return EfetuarPagamentoReturnDto.builder().pagamentoId(idPagamento).pagamentoExternoId(pagamentoExternoId).build();
 	}
 
 	private void calcularAtribuirValorPagamento(EfetuarPagamentoParamDto paramsDto, PedidoDto pedidoDto) {
 		List<Item> itens = pedidoDto.getItens().stream().map(i -> Item.builder()
         		.id(i.getId())
-        		.valorUnitario(new BigDecimal(i.getValorUnitario()))
+        		.valorUnitario(BigDecimal.valueOf(i.getValorUnitario()))
         		.quantidade(i.getQuantidade())
         		.build()).toList();
         
@@ -82,7 +78,7 @@ public class EfetuarPagamentoUseCaseImpl implements EfetuarPagamentoUseCase {
         paramsDto.getPagamento().setValor(valorTotal.doubleValue());
 	}
 
-	//TODO: Método candidato a ser usecase 
+	//Método candidato a ser usecase 
 	private String enviaPagamentoSistemaExterno(EfetuarPagamentoParamDto dto, Double valor, ClienteDto clienteDto) {
 		
 		EnviaPagamentoExternoParamDto enviaPagamentoExternoParamDto = 
@@ -112,7 +108,7 @@ public class EfetuarPagamentoUseCaseImpl implements EfetuarPagamentoUseCase {
 	}
 
 	
-	//TODO: Método candidato a ser usecase 
+	//Método candidato a ser usecase 
 	private PedidoDto obtemPedidoVerificandoSeEleExiste(Long pedidoId) {
 		Optional<PedidoDto> pedidoOp = pedidoGateway.obterPorId(pedidoId);
 		if (pedidoOp.isEmpty()) {
@@ -123,7 +119,7 @@ public class EfetuarPagamentoUseCaseImpl implements EfetuarPagamentoUseCase {
 		return pedidoOp.get();
 	}
 
-	//TODO: Método candidato a ser usecase 
+	//Método candidato a ser usecase 
 	private ClienteDto obtemClienteVerificandoSeEleExiste(Long clienteId) {
 		Optional<ClienteDto> clienteOp = clienteGateway.obterPorId(clienteId);
 		if (clienteOp.isEmpty()) {

@@ -21,24 +21,14 @@ public class PagamentoController {
     private ObterPagamentoUsecase obterPagamentoUseCase;
 
     public EfetuarPagamentoReturnDto efetuar(EfetuarPagamentoParamDto paramsDto) {
-        log.trace("Start paramsDto={}", paramsDto);
-        EfetuarPagamentoReturnDto returnDto = this.efetuarPagamentoUseCase.efetuar(paramsDto);
-        log.trace("End returnDto={}", returnDto);
-        return returnDto;
+        return this.efetuarPagamentoUseCase.efetuar(paramsDto);
     }
 
     public void notificacoes(PlataformaPagamento plataformaPagamento, String identificadorPagamento) {
-        log.trace("Start plataformaPagamento={}, identificadorPagamento={}", plataformaPagamento, identificadorPagamento);
-
         atualizarStatusPagamentoUseCase.atualizar(plataformaPagamento, identificadorPagamento);
-        
-        log.trace("End");
     }
 
 	public PagamentoDto obterByIdentificadorPagamento(String identificadorPagamentoExterno) {
-		log.trace("Start identificadorPagamento={}", identificadorPagamentoExterno);
-		PagamentoDto dto = obterPagamentoUseCase.obterPorIdentificadorPagamento(identificadorPagamentoExterno);
-		log.trace("End dto={}", dto);
-		return dto;
+		return obterPagamentoUseCase.obterPorIdentificadorPagamento(identificadorPagamentoExterno);
 	}
 }

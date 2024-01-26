@@ -7,7 +7,7 @@ import lombok.Getter;
 public class ClienteNaoEncontradoException extends SystemBaseException {
 	private static final long serialVersionUID = 1114835481528583159L;
 	
-	private String code = "sgr.clienteNotFound";
-    private String message = "Cliente não foi encontrado";
-    private Integer httpStatus = 404;
+	private String code = "sgr.clienteNotFound";//NOSONAR
+    private String message = "Cliente não foi encontrado";//NOSONAR
+    private Integer httpStatus = 404;//NOSONAR
 }
