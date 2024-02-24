@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +35,9 @@ public class PedidoServiceGateway implements PedidoGateway {
 	@NonNull
     private ObjectMapper mapper;
 	
+	@NonNull
+	private Environment environment;
+	
 	@Override
 	public Optional<PedidoDto> obterPorId(Long pedidoId) {
 		try {
@@ -48,18 +52,24 @@ public class PedidoServiceGateway implements PedidoGateway {
 	@Override
 	public void alterarStatus(PedidoDto pedido) {
 		try {
-			final String url = baseUrl + "/sgr/pedidos/" + pedido.getId() + "/status"; 
-			HttpConnectDto httpConnectDto = HttpConnectDto.builder()
-					.url(url)
-					.requestBody(PedidoJson.builder().status(pedido.getStatus()).build())
-					.build();
 			
-			httpConnectGateway.patch(httpConnectDto);
+			if(isProdActiveProfile()) {
+				//TODO: mandar para a fila: atualiza-status-pedido-qeue
+				
+			} else {
+				log.warn("## MOCK ##");
+			}
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			throw new ErrorToAccessPedidoServiceException();
 		}
+	}
+	
+	private boolean isProdActiveProfile() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		String activeProfile = activeProfiles[0];
+		return "prd".equals(activeProfile);
 	}
 	
 	private PedidoDto mapJsonToDto(PedidoJson pedidoJson) {

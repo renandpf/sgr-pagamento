@@ -9,7 +9,8 @@ import lombok.ToString;
 @Getter
 public class ClienteJson {
 	private Long id;
-	private String nome;
-	private String cpf;
-	private String email;
+    private String nome;
+    private String cpf;
+    private String email;
+    private String telefone;
 }

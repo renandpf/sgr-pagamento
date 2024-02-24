@@ -74,6 +74,7 @@ public class ClienteServiceGateway implements ClienteGateway {
 				.nome(pedidoJson.getNome())
 				.cpf(pedidoJson.getCpf())
 				.email(pedidoJson.getEmail())
+				.telefone(pedidoJson.getTelefone())
 				.build();
 	}
 
