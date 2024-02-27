@@ -7,8 +7,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
@@ -22,11 +25,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.env.Environment;
+import org.springframework.jms.core.JmsTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.pupposoft.fiap.sgr.pagamento.adapter.external.json.ItemJson;
 import br.com.pupposoft.fiap.sgr.pagamento.adapter.external.json.PedidoJson;
+import br.com.pupposoft.fiap.sgr.pagamento.adapter.external.json.PedidoMessageJson;
 import br.com.pupposoft.fiap.sgr.pagamento.core.domain.StatusPedido;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ErrorToAccessPedidoServiceException;
@@ -47,6 +53,13 @@ class PedidoServiceGatewayUnitTest {
     @Mock
     private ObjectMapper mapper;
 
+	@Mock
+	private Environment environment;
+	
+	@Mock
+	private JmsTemplate statusPedidoTemplate;
+
+    
 	@Test
 	void shouldSucessFoundOnObterPorId() throws Exception {
 		final Long pedidoIdParam = getRandomLong();
@@ -130,31 +143,56 @@ class PedidoServiceGatewayUnitTest {
 	}
 	
 	@Test
-	void shouldSucessAlterarStatus() throws Exception {
-		final PedidoDto pedidoDto = PedidoDto.builder().build();
-		final String response = getRandomString();
-		final String baseUrl = getRandomString();
+	void shouldSucessAlterarStatusInNoPrdProfile() throws Exception {
+		final PedidoDto pedidoDto = PedidoDto.builder()
+				.id(getRandomLong())
+				.status(StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO)
+				.build();
 		
-		setField(pedidoGateway, "baseUrl", baseUrl);
-		
-		doReturn(response).when(httpConnectGateway).patch(any(HttpConnectDto.class));
+		String profiles[] = {"anyNoPrd"};
+		doReturn(profiles).when(environment).getActiveProfiles();
 		
 		pedidoGateway.alterarStatus(pedidoDto);
 		
-		ArgumentCaptor<HttpConnectDto> httpConnectDtoAC = ArgumentCaptor.forClass(HttpConnectDto.class);
-		verify(httpConnectGateway).patch(httpConnectDtoAC.capture());
-		HttpConnectDto httpCpnnectDto = httpConnectDtoAC.getValue();
-		
-		assertEquals(baseUrl + "/sgr/pedidos/" + pedidoDto.getId() + "/status", httpCpnnectDto.getUrl());
-		assertEquals(pedidoDto.getStatus(), ((PedidoJson) httpCpnnectDto.getRequestBody()).getStatus());
+		verify(statusPedidoTemplate, never()).convertAndSend(anyString(), any(PedidoMessageJson.class));
 	}
 	
 	@Test
-	void shouldErrorToAccessPedidoServiceExceptionOnAlterarStatus() throws Exception {
-		final PedidoDto pedidoDto = PedidoDto.builder().build();
+	void shouldSucessAlterarStatusInPrdProfile() throws Exception {
+		final PedidoDto pedidoDto = PedidoDto.builder()
+				.id(getRandomLong())
+				.status(StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO)
+				.build();
 		
-		doThrow(new RuntimeException()).when(httpConnectGateway).patch(any(HttpConnectDto.class));
+		String profiles[] = {"prd"};
+		doReturn(profiles).when(environment).getActiveProfiles();
+		
+		pedidoGateway.alterarStatus(pedidoDto);
+		
+		ArgumentCaptor<PedidoMessageJson> pedidoMessageJsonAC = ArgumentCaptor.forClass(PedidoMessageJson.class);
+		verify(statusPedidoTemplate).convertAndSend(eq("atualiza-status-pedido-qeue"), pedidoMessageJsonAC.capture());
+		PedidoMessageJson pedidoMessageJsonDto = pedidoMessageJsonAC.getValue();
+		
+		assertEquals(pedidoDto.getId(), pedidoMessageJsonDto.getId());
+		assertEquals(pedidoDto.getStatus().name(), pedidoMessageJsonDto.getStatus());
+	}
+	
+	@Test
+	void shouldErrorAlterarStatusInPrdProfile() throws Exception {
+		final PedidoDto pedidoDto = PedidoDto.builder()
+				.id(getRandomLong())
+				.status(StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO)
+				.build();
+
+		
+		String profiles[] = {"prd"};
+		doReturn(profiles).when(environment).getActiveProfiles();
+		
+		doThrow(new RuntimeException()).when(statusPedidoTemplate).convertAndSend(anyString(), any(PedidoMessageJson.class));
 		
 		assertThrows(ErrorToAccessPedidoServiceException.class, () -> pedidoGateway.alterarStatus(pedidoDto));
+		
+		verify(statusPedidoTemplate).convertAndSend(eq("atualiza-status-pedido-qeue"), any(PedidoMessageJson.class));
 	}
+
 }
