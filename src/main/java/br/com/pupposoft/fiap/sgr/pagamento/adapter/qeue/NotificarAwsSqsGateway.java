@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NotificarAwsSqsGateway implements NotificarGateway{
 
-	private JmsTemplate notifyClienteTemplate;
+	private JmsTemplate notifyTemplate;
 	
 	@Async//Para não travar o fluxo de criação de pedido 
 	@Override
@@ -26,7 +26,7 @@ public class NotificarAwsSqsGateway implements NotificarGateway{
 		
 		try {
 			
-			notifyClienteTemplate.convertAndSend("notificar-qeue", dto);
+			notifyTemplate.convertAndSend("notificar-qeue", dto);
 			
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

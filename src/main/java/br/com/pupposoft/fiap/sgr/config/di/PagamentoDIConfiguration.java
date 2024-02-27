@@ -37,7 +37,7 @@ public class PagamentoDIConfiguration {
 	
 	private List<PlataformaPagamentoGateway> plataformaPagamentoGatewayList;
 	
-	private NotificarGateway notificar;
+	private NotificarGateway notificarGateway;
 
 	@Bean
 	public PlataformaPagamentoFactory plataformaPagamentoFactory() {
@@ -48,14 +48,14 @@ public class PagamentoDIConfiguration {
 	@Autowired
 	@DependsOn("plataformaPagamentoFactory")
 	public EfetuarPagamentoUseCase efetuarPagamentoUseCase(PlataformaPagamentoFactory plataformaPagamentoFactory) {
-		return new EfetuarPagamentoUseCaseImpl(pedidoGateway, plataformaPagamentoFactory, pagamentoGateway, clienteGateway, notificar);
+		return new EfetuarPagamentoUseCaseImpl(pedidoGateway, plataformaPagamentoFactory, pagamentoGateway, clienteGateway, notificarGateway);
 	}
 
 	@Bean
 	@Autowired
 	@DependsOn("plataformaPagamentoFactory")
 	public AtualizarStatusPagamentoUseCase confirmarPagamentoUseCase(PlataformaPagamentoFactory plataformaPagamentoFactory) {
-		return new AtualizarPedidoUseCaseImpl(pedidoGateway, plataformaPagamentoFactory, pagamentoGateway);
+		return new AtualizarPedidoUseCaseImpl(pedidoGateway, clienteGateway, plataformaPagamentoFactory, pagamentoGateway, notificarGateway);
 	}
 	
 	@Bean

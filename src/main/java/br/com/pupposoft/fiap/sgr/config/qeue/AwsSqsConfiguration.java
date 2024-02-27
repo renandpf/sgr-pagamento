@@ -40,7 +40,7 @@ public class AwsSqsConfiguration {
     }
 	
 	@Bean
-	public JmsTemplate notifyClienteTemplate() {
+	public JmsTemplate notifyTemplate() {
 		return new JmsTemplate(createSQSConnectionFactoryNotifyClient());
 	}
 
