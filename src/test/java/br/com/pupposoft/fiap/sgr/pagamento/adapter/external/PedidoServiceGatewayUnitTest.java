@@ -159,10 +159,13 @@ class PedidoServiceGatewayUnitTest {
 	
 	@Test
 	void shouldSucessAlterarStatusInPrdProfile() throws Exception {
+		setField(pedidoGateway, "statusPedidoTemplate", statusPedidoTemplate);
+		
 		final PedidoDto pedidoDto = PedidoDto.builder()
 				.id(getRandomLong())
 				.status(StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO)
 				.build();
+		
 		
 		String profiles[] = {"prd"};
 		doReturn(profiles).when(environment).getActiveProfiles();
@@ -179,6 +182,8 @@ class PedidoServiceGatewayUnitTest {
 	
 	@Test
 	void shouldErrorAlterarStatusInPrdProfile() throws Exception {
+		setField(pedidoGateway, "statusPedidoTemplate", statusPedidoTemplate);
+		
 		final PedidoDto pedidoDto = PedidoDto.builder()
 				.id(getRandomLong())
 				.status(StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO)
