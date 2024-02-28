@@ -9,7 +9,8 @@ import lombok.ToString;
 @ToString
 public class ClienteDto {
 	private Long id;
-	private String nome;
-	private String cpf;
-	private String email;
+    private String nome;
+    private String cpf;
+    private String email;
+    private String telefone;
 }

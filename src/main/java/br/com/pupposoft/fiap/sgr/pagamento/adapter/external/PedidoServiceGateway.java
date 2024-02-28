@@ -3,12 +3,18 @@ package br.com.pupposoft.fiap.sgr.pagamento.adapter.external;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.pupposoft.fiap.sgr.pagamento.adapter.external.json.PedidoJson;
+import br.com.pupposoft.fiap.sgr.pagamento.adapter.external.json.PedidoMessageJson;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.ItemDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ErrorToAccessPedidoServiceException;
@@ -34,6 +40,13 @@ public class PedidoServiceGateway implements PedidoGateway {
 	@NonNull
     private ObjectMapper mapper;
 	
+	@NonNull
+	private Environment environment;
+	
+	@Autowired//NOSONAR
+	@Qualifier("statusPedidoTemplate")
+	private JmsTemplate statusPedidoTemplate;
+	
 	@Override
 	public Optional<PedidoDto> obterPorId(Long pedidoId) {
 		try {
@@ -45,21 +58,29 @@ public class PedidoServiceGateway implements PedidoGateway {
 		}
 	}
 
+	@Async // Para não travar o fluxo de pagamento
 	@Override
 	public void alterarStatus(PedidoDto pedido) {
 		try {
-			final String url = baseUrl + "/sgr/pedidos/" + pedido.getId() + "/status"; 
-			HttpConnectDto httpConnectDto = HttpConnectDto.builder()
-					.url(url)
-					.requestBody(PedidoJson.builder().status(pedido.getStatus()).build())
-					.build();
 			
-			httpConnectGateway.patch(httpConnectDto);
+			if(isProdActiveProfile()) {
+				String dtoJsonStr = mapper.writeValueAsString(new PedidoMessageJson(pedido.getId(), pedido.getStatus().name()));
+				statusPedidoTemplate.convertAndSend("atualiza-status-pedido-qeue", dtoJsonStr);
+				
+			} else {
+				log.warn("## MOCK ##");
+			}
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			throw new ErrorToAccessPedidoServiceException();
 		}
+	}
+	
+	private boolean isProdActiveProfile() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		String activeProfile = activeProfiles[0];
+		return "prd".equals(activeProfile);
 	}
 	
 	private PedidoDto mapJsonToDto(PedidoJson pedidoJson) {

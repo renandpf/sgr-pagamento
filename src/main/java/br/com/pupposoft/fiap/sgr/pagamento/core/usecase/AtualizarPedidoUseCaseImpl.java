@@ -1,14 +1,20 @@
 package br.com.pupposoft.fiap.sgr.pagamento.core.usecase;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import br.com.pupposoft.fiap.sgr.pagamento.core.domain.Pedido;
 import br.com.pupposoft.fiap.sgr.pagamento.core.domain.PlataformaPagamento;
 import br.com.pupposoft.fiap.sgr.pagamento.core.domain.StatusPedido;
+import br.com.pupposoft.fiap.sgr.pagamento.core.dto.ClienteDto;
+import br.com.pupposoft.fiap.sgr.pagamento.core.dto.NotificarDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PagamentoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
+import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ClienteNaoEncontradoException;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.PagamentoNaoEncontradoException;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.PedidoNaoEncontradoException;
+import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.ClienteGateway;
+import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.NotificarGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PagamentoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PedidoGateway;
 import lombok.AllArgsConstructor;
@@ -20,14 +26,20 @@ public class AtualizarPedidoUseCaseImpl implements AtualizarStatusPagamentoUseCa
 	
 	private PedidoGateway pedidoGateway;
 	
+	private ClienteGateway clienteGateway;
+	
 	private PlataformaPagamentoFactory plataformaPagamentoFactory;
 	
 	private PagamentoGateway pagamentoGateway;
+	
+	private NotificarGateway notificarGateway;
 	
 	@Override
     public void atualizar(PlataformaPagamento plataformaPagamento, String identificadorPagamento) {
         PagamentoDto pagamentoDto = obtemPagamentoPorIdentificadorPagamento(identificadorPagamento);
         PedidoDto pedidoDto = getPedidoById(pagamentoDto.getPedido().getId());
+        ClienteDto clienteDto = getClienteById(pedidoDto.getClienteId());
+        
         
         StatusPedido newStatus = plataformaPagamentoFactory.obter(plataformaPagamento).obtemStatus(identificadorPagamento);
         
@@ -39,7 +51,23 @@ public class AtualizarPedidoUseCaseImpl implements AtualizarStatusPagamentoUseCa
         		.status(newStatus)
         		.build();
 
-        this.pedidoGateway.alterarStatus(pedidoDtoStatusPago);
+        pedidoGateway.alterarStatus(pedidoDtoStatusPago);
+        
+        NotificarDto notificarClienteDto = NotificarDto.builder()
+        		.assunto("Status pedido: " + pedidoDto.getId())
+        		.conteudo("O status do seu pedido é " + newStatus.name())
+        		.destinatarios(Arrays.asList(clienteDto.getEmail(), clienteDto.getTelefone()))
+        		.build();
+        
+        notificarGateway.notificar(notificarClienteDto);
+        
+        NotificarDto notificarCozinhaDto = NotificarDto.builder()
+        		.assunto("Novo pedido: " + pedidoDto.getId())
+        		.conteudo("Verifique detalhes do pedido pela plataforma")
+        		.destinatarios(Arrays.asList("mock telefone cozinha"))
+        		.build();
+        
+        notificarGateway.notificar(notificarCozinhaDto);
     }
 
 
@@ -51,6 +79,16 @@ public class AtualizarPedidoUseCaseImpl implements AtualizarStatusPagamentoUseCa
         }
         
         return pedidoDtoOp.get();
+	}
+	
+	private ClienteDto getClienteById(Long clienteId) {
+		Optional<ClienteDto> clienteDtoOp = clienteGateway.obterPorId(clienteId);
+		if(clienteDtoOp.isEmpty()) {
+			log.warn("Cliente não encontrado. pedidoId={}", clienteId);
+			throw new ClienteNaoEncontradoException();
+		}
+		
+		return clienteDtoOp.get();
 	}
 
 

@@ -2,6 +2,7 @@ package br.com.pupposoft.fiap.sgr.pagamento.core.usecase;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.domain.ModoPagamento;
 import br.com.pupposoft.fiap.sgr.pagamento.core.domain.Pedido;
 import br.com.pupposoft.fiap.sgr.pagamento.core.domain.StatusPedido;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.ClienteDto;
+import br.com.pupposoft.fiap.sgr.pagamento.core.dto.NotificarDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PagamentoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.EfetuarPagamentoParamDto;
@@ -20,8 +22,10 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.exception.CamposObrigatoriosNaoP
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ClienteNaoEncontradoException;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.PedidoNaoEncontradoException;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.ClienteGateway;
+import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.NotificarGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PagamentoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PedidoGateway;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,6 +40,8 @@ public class EfetuarPagamentoUseCaseImpl implements EfetuarPagamentoUseCase {
 	private PagamentoGateway pagamentoGateway;
 	
 	private ClienteGateway clienteGateway;
+	
+	private NotificarGateway notificarGateway;
 	
 	@Override
 	public EfetuarPagamentoReturnDto efetuar(EfetuarPagamentoParamDto paramsDto) {
@@ -56,9 +62,20 @@ public class EfetuarPagamentoUseCaseImpl implements EfetuarPagamentoUseCase {
 
         pedidoGateway.alterarStatus(pedidoDto);
 
+        notificaCliente(pedidoDto, clienteDto);
+        
         return EfetuarPagamentoReturnDto.builder().pagamentoId(idPagamento).pagamentoExternoId(pagamentoExternoId).build();
 	}
 
+	private void notificaCliente(PedidoDto pedido, ClienteDto clienteDto) {
+		List<String> destinarios = Arrays.asList(clienteDto.getEmail(), clienteDto.getTelefone());
+		notificarGateway.notificar(NotificarDto.builder()
+				.assunto("Status pedido: " + pedido.getId())
+				.conteudo("O status do seu pedido é " + pedido.getStatus().name())
+				.destinatarios(destinarios)
+				.build());
+	}
+	
 	private void calcularAtribuirValorPagamento(EfetuarPagamentoParamDto paramsDto, PedidoDto pedidoDto) {
 		List<Item> itens = pedidoDto.getItens().stream().map(i -> Item.builder()
         		.id(i.getId())

@@ -1,5 +1,11 @@
 package br.com.pupposoft.fiap.sgr.config.database.pagamento.repository;
 
+import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomLong;
+import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -7,15 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
-import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PagamentoEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PlataformaPagamentoEntity;
-
-import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.*;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.List;
-import java.util.Optional;
 
 @DataJpaTest
 @TestPropertySource(locations = "classpath:application-test.properties")

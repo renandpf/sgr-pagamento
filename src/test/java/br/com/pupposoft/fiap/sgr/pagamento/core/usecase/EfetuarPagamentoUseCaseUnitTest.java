@@ -2,6 +2,7 @@ package br.com.pupposoft.fiap.sgr.pagamento.core.usecase;
 
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomLong;
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomString;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,6 +26,7 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.domain.ModoPagamento;
 import br.com.pupposoft.fiap.sgr.pagamento.core.domain.StatusPedido;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.ClienteDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.ItemDto;
+import br.com.pupposoft.fiap.sgr.pagamento.core.dto.NotificarDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PagamentoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.flow.EfetuarPagamentoParamDto;
@@ -35,6 +37,7 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.exception.CamposObrigatoriosNaoP
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ClienteNaoEncontradoException;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.PedidoNaoEncontradoException;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.ClienteGateway;
+import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.NotificarGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PagamentoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PedidoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PlataformaPagamentoGateway;
@@ -54,8 +57,12 @@ class EfetuarPagamentoUseCaseUnitTest {
 	@Mock
 	private ClienteGateway clienteGateway;
 	
+	@Mock
+	private NotificarGateway notificarGateway;
+	
 	@InjectMocks
-	private EfetuarPagamentoUseCase efetuarPagamentoUseCase = new EfetuarPagamentoUseCaseImpl(pedidoGateway, plataformaPagamentoFactory, pagamentoGateway, clienteGateway);
+	private EfetuarPagamentoUseCase efetuarPagamentoUseCase = 
+		new EfetuarPagamentoUseCaseImpl(pedidoGateway, plataformaPagamentoFactory, pagamentoGateway, clienteGateway, notificarGateway);
 	
 	@Test
 	void shouldSuccess() {
@@ -79,7 +86,8 @@ class EfetuarPagamentoUseCaseUnitTest {
 		Optional<PedidoDto> pedidoOp = Optional.of(pedidoDto);
 		doReturn(pedidoOp).when(pedidoGateway).obterPorId(pedidoId);
 
-		ClienteDto clienteDto = ClienteDto.builder().id(clienteId).nome(getRandomString()).cpf(getRandomString()).email(getRandomString()).build();
+		ClienteDto clienteDto = 
+				ClienteDto.builder().id(clienteId).nome(getRandomString()).cpf(getRandomString()).email(getRandomString()).telefone(getRandomString()).build();
 		Optional<ClienteDto> clienteDtoOp = Optional.of(clienteDto);
 		doReturn(clienteDtoOp).when(clienteGateway).obterPorId(clienteId);
 		
@@ -112,6 +120,16 @@ class EfetuarPagamentoUseCaseUnitTest {
 		assertEquals(valorTotalPedido, enviaPagamentoExternoParamDtoSent.getValor());
 
 		verify(pagamentoGateway).criar(paramsDto.getPagamento());
+		
+		ArgumentCaptor<NotificarDto> notificarDtoAC = ArgumentCaptor.forClass(NotificarDto.class);
+		verify(notificarGateway).notificar(notificarDtoAC.capture());
+		
+		NotificarDto notificarDto = notificarDtoAC.getValue();
+		
+		assertEquals("Status pedido: " + pedidoId, notificarDto.getAssunto());
+		assertEquals("O status do seu pedido é " + StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO.name(), notificarDto.getConteudo());
+		assertTrue(notificarDto.getDestinatarios().contains(clienteDto.getEmail()));
+		assertTrue(notificarDto.getDestinatarios().contains(clienteDto.getTelefone()));
 	}
 
 	@Test

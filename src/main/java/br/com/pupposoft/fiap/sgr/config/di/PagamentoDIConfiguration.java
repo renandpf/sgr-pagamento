@@ -9,6 +9,7 @@ import org.springframework.context.annotation.DependsOn;
 
 import br.com.pupposoft.fiap.sgr.pagamento.core.controller.PagamentoController;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.ClienteGateway;
+import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.NotificarGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PagamentoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PedidoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PlataformaPagamentoConfigGateway;
@@ -35,6 +36,8 @@ public class PagamentoDIConfiguration {
 	private PlataformaPagamentoConfigGateway plataformaPagamentoConfigGateway;
 	
 	private List<PlataformaPagamentoGateway> plataformaPagamentoGatewayList;
+	
+	private NotificarGateway notificarGateway;
 
 	@Bean
 	public PlataformaPagamentoFactory plataformaPagamentoFactory() {
@@ -45,14 +48,14 @@ public class PagamentoDIConfiguration {
 	@Autowired
 	@DependsOn("plataformaPagamentoFactory")
 	public EfetuarPagamentoUseCase efetuarPagamentoUseCase(PlataformaPagamentoFactory plataformaPagamentoFactory) {
-		return new EfetuarPagamentoUseCaseImpl(pedidoGateway, plataformaPagamentoFactory, pagamentoGateway, clienteGateway);
+		return new EfetuarPagamentoUseCaseImpl(pedidoGateway, plataformaPagamentoFactory, pagamentoGateway, clienteGateway, notificarGateway);
 	}
 
 	@Bean
 	@Autowired
 	@DependsOn("plataformaPagamentoFactory")
 	public AtualizarStatusPagamentoUseCase confirmarPagamentoUseCase(PlataformaPagamentoFactory plataformaPagamentoFactory) {
-		return new AtualizarPedidoUseCaseImpl(pedidoGateway, plataformaPagamentoFactory, pagamentoGateway);
+		return new AtualizarPedidoUseCaseImpl(pedidoGateway, clienteGateway, plataformaPagamentoFactory, pagamentoGateway, notificarGateway);
 	}
 	
 	@Bean

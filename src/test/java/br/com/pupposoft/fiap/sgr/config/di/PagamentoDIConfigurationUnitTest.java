@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.pupposoft.fiap.sgr.pagamento.core.controller.PagamentoController;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.ClienteGateway;
+import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.NotificarGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PagamentoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PedidoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PlataformaPagamentoConfigGateway;
@@ -37,6 +38,9 @@ class PagamentoDIConfigurationUnitTest {
 	
 	@Mock
 	private PagamentoGateway pagamentoGateway;
+	
+	@Mock
+	private NotificarGateway notificarGateway;
 	
 	@Mock
 	private PlataformaPagamentoConfigGateway plataformaPagamentoConfigGateway;
@@ -67,8 +71,10 @@ class PagamentoDIConfigurationUnitTest {
 		
 		AtualizarStatusPagamentoUseCase confirmarPagamentoUseCase = pagamentoDIConfiguration.confirmarPagamentoUseCase(plataformaPagamentoFactory);
 		assertEquals(pedidoGateway, getField(confirmarPagamentoUseCase, "pedidoGateway"));
+		assertEquals(clienteGateway, getField(confirmarPagamentoUseCase, "clienteGateway"));
 		assertEquals(plataformaPagamentoFactory, getField(confirmarPagamentoUseCase, "plataformaPagamentoFactory"));
 		assertEquals(pagamentoGateway, getField(confirmarPagamentoUseCase, "pagamentoGateway"));
+		assertEquals(notificarGateway, getField(confirmarPagamentoUseCase, "notificarGateway"));
 	}
 	
 	@Test
