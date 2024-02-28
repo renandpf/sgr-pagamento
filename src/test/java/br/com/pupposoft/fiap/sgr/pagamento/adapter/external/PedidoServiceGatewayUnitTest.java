@@ -154,7 +154,7 @@ class PedidoServiceGatewayUnitTest {
 		
 		pedidoGateway.alterarStatus(pedidoDto);
 		
-		verify(statusPedidoTemplate, never()).convertAndSend(anyString(), any(PedidoMessageJson.class));
+		verify(statusPedidoTemplate, never()).convertAndSend(anyString(), anyString());
 	}
 	
 	@Test
@@ -170,14 +170,19 @@ class PedidoServiceGatewayUnitTest {
 		String profiles[] = {"prd"};
 		doReturn(profiles).when(environment).getActiveProfiles();
 		
+		String pedidoMessageJsonStr = getRandomString();
+		doReturn(pedidoMessageJsonStr).when(mapper).writeValueAsString(any(PedidoMessageJson.class));
+		
 		pedidoGateway.alterarStatus(pedidoDto);
-		
+
 		ArgumentCaptor<PedidoMessageJson> pedidoMessageJsonAC = ArgumentCaptor.forClass(PedidoMessageJson.class);
-		verify(statusPedidoTemplate).convertAndSend(eq("atualiza-status-pedido-qeue"), pedidoMessageJsonAC.capture());
+		verify(mapper).writeValueAsString(pedidoMessageJsonAC.capture());
 		PedidoMessageJson pedidoMessageJsonDto = pedidoMessageJsonAC.getValue();
-		
 		assertEquals(pedidoDto.getId(), pedidoMessageJsonDto.getId());
 		assertEquals(pedidoDto.getStatus().name(), pedidoMessageJsonDto.getStatus());
+		
+		
+		verify(statusPedidoTemplate).convertAndSend("atualiza-status-pedido-qeue", pedidoMessageJsonStr);
 	}
 	
 	@Test
@@ -193,11 +198,14 @@ class PedidoServiceGatewayUnitTest {
 		String profiles[] = {"prd"};
 		doReturn(profiles).when(environment).getActiveProfiles();
 		
-		doThrow(new RuntimeException()).when(statusPedidoTemplate).convertAndSend(anyString(), any(PedidoMessageJson.class));
+		String pedidoMessageJsonStr = getRandomString();
+		doReturn(pedidoMessageJsonStr).when(mapper).writeValueAsString(any(PedidoMessageJson.class));
+		
+		doThrow(new RuntimeException()).when(statusPedidoTemplate).convertAndSend(anyString(), anyString());
 		
 		assertThrows(ErrorToAccessPedidoServiceException.class, () -> pedidoGateway.alterarStatus(pedidoDto));
 		
-		verify(statusPedidoTemplate).convertAndSend(eq("atualiza-status-pedido-qeue"), any(PedidoMessageJson.class));
+		verify(statusPedidoTemplate).convertAndSend(eq("atualiza-status-pedido-qeue"), anyString());
 	}
 
 }

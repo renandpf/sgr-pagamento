@@ -64,8 +64,8 @@ public class PedidoServiceGateway implements PedidoGateway {
 		try {
 			
 			if(isProdActiveProfile()) {
-				
-				statusPedidoTemplate.convertAndSend("atualiza-status-pedido-qeue", new PedidoMessageJson(pedido.getId(), pedido.getStatus().name()));
+				String dtoJsonStr = mapper.writeValueAsString(new PedidoMessageJson(pedido.getId(), pedido.getStatus().name()));
+				statusPedidoTemplate.convertAndSend("atualiza-status-pedido-qeue", dtoJsonStr);
 				
 			} else {
 				log.warn("## MOCK ##");
