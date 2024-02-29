@@ -28,7 +28,7 @@ public class PagamentoGatewayMySqlRepository implements PagamentoGateway {
 		try {
 			
 			ClienteEntity clienteEntity = ClienteEntity.builder()
-					.id(pagamentoDto.getPedido().getCliente().getId())
+					.clienteId(pagamentoDto.getPedido().getCliente().getId())
 					.nome(pagamentoDto.getPedido().getCliente().getNome())
 					.email(pagamentoDto.getPedido().getCliente().getEmail())
 					.telefone(pagamentoDto.getPedido().getCliente().getTelefone())

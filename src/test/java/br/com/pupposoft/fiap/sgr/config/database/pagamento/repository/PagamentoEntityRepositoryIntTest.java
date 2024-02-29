@@ -32,7 +32,7 @@ class PagamentoEntityRepositoryIntTest {
     void shouldSucessOnFindByIdentificadorPagamentoExterno() {
 
     	ClienteEntity clienteEntityA = ClienteEntity.builder()
-				.id(getRandomLong())
+				.clienteId(getRandomLong())
 				.nome(getRandomString())
 				.email(getRandomString())
 				.telefone(getRandomString())
@@ -51,7 +51,7 @@ class PagamentoEntityRepositoryIntTest {
 				.build();
 		
 		ClienteEntity clienteEntityB = ClienteEntity.builder()
-				.id(getRandomLong())
+				.clienteId(getRandomLong())
 				.nome(getRandomString())
 				.email(getRandomString())
 				.telefone(getRandomString())

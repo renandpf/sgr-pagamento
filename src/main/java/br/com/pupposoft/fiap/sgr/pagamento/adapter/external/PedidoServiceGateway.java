@@ -62,6 +62,7 @@ public class PedidoServiceGateway implements PedidoGateway {
 	private boolean isProdActiveProfile() {
 		String[] activeProfiles = environment.getActiveProfiles();
 		String activeProfile = activeProfiles[0];
+		//return true;
 		return "prd".equals(activeProfile);
 	}
 }

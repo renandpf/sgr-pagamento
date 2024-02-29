@@ -2,6 +2,7 @@ package br.com.pupposoft.fiap.sgr.pagamento.adapter.repository;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -76,7 +77,8 @@ class PagamentoGatewayMySqlRepositoryUnitTest {
 		assertEquals(pagamentoDtoParam.getValor(), pagamentoEntityCaptured.getValor());
 		assertEquals(pagamentoDtoParam.getPedido().getId(), pagamentoEntityCaptured.getPedido().getId());
 		assertEquals(pagamentoDtoParam.getPedido().getValor(), pagamentoEntityCaptured.getPedido().getValor());
-		assertEquals(pagamentoDtoParam.getPedido().getCliente().getId(), pagamentoEntityCaptured.getPedido().getCliente().getId());
+		assertNull(pagamentoEntityCaptured.getPedido().getCliente().getId());
+		assertEquals(pagamentoDtoParam.getPedido().getCliente().getId(), pagamentoEntityCaptured.getPedido().getCliente().getClienteId());
 		assertEquals(pagamentoDtoParam.getPedido().getCliente().getNome(), pagamentoEntityCaptured.getPedido().getCliente().getNome());
 		assertEquals(pagamentoDtoParam.getPedido().getCliente().getTelefone(), pagamentoEntityCaptured.getPedido().getCliente().getTelefone());
 		assertEquals(pagamentoDtoParam.getPedido().getCliente().getEmail(), pagamentoEntityCaptured.getPedido().getCliente().getEmail());
