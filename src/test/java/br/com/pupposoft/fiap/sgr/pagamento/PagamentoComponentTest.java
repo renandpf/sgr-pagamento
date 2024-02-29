@@ -4,9 +4,9 @@ import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomDo
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomInteger;
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomLong;
 import static br.com.pupposoft.fiap.test.databuilder.DataBuilderBase.getRandomString;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -29,13 +29,13 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 import br.com.pupposoft.fiap.SgrPagamentoService;
+import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.ClienteEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PagamentoEntity;
+import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PedidoEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PlataformaPagamentoEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.repository.PlataformaPagamentoEntityRepository;
 import br.com.pupposoft.fiap.sgr.pagamento.adapter.web.PagamentoApiController;
 import br.com.pupposoft.fiap.sgr.pagamento.adapter.web.json.PagamentoJson;
-import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.ClienteGateway;
-import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PedidoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PlataformaPagamentoGateway;
 import br.com.pupposoft.fiap.starter.http.HttpConnect;
 import br.com.pupposoft.fiap.test.databuilder.DataBuilderBase;
@@ -54,12 +54,6 @@ class PagamentoComponentTest extends ComponentTestBase {
 	private PagamentoApiController pagamentoApiController;
 	
     @Autowired
-    private PedidoGateway pedidoGateway;
-    
-    @Autowired
-    private ClienteGateway clienteGateway;
-    
-    @Autowired
     @Qualifier("plataformaPagamentoMercadoPagoGateway")
     PlataformaPagamentoGateway plataformaPagamentoGateway;
     
@@ -73,8 +67,6 @@ class PagamentoComponentTest extends ComponentTestBase {
 
     @Test
 	void efetuarWithMercadoPagoTest(WireMockRuntimeInfo wmRuntimeInfo) {
-		setField(pedidoGateway, "baseUrl", "http://localhost:" + randomServerPort);
-		setField(clienteGateway, "baseUrl", "http://localhost:" + randomServerPort);
 		
 		final Integer idPagamentoExterno = getRandomInteger();
 		final String responseBodyStr = "{\"id\": "+ idPagamentoExterno +"  }";
@@ -124,12 +116,23 @@ class PagamentoComponentTest extends ComponentTestBase {
 
 	private PagamentoEntity createObterByIdentificadorPagamentoData() {
 		
-		PagamentoEntity pagamentoEntity = PagamentoEntity
-				.builder()
-				.id(null)
+    	ClienteEntity clienteEntity = ClienteEntity.builder()
+				.id(getRandomLong())
+				.nome(getRandomString())
+				.email(getRandomString())
+				.telefone(getRandomString())
+				.build();
+		
+		PedidoEntity pedidoEntity = PedidoEntity.builder()
+				.id(getRandomLong())
+				.valor(getRandomDouble())
+				.cliente(clienteEntity)
+				.build();
+		
+		PagamentoEntity pagamentoEntity = PagamentoEntity.builder()
 				.identificadorPagamentoExterno(getRandomString())
 				.valor(getRandomDouble())
-				.pedidoId(getRandomLong())
+				.pedido(pedidoEntity)
 				.build();
 		
 		pagamentoEntityRepository.save(pagamentoEntity);

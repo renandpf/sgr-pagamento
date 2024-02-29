@@ -36,12 +36,8 @@ public class PlataformaPagamentoMockGateway extends PlataformaPagamentoGateway {
 	}
 
 	@Override
-	public StatusPedido obtemStatus(String statusPagamento) {
+	public StatusPedido obtemStatus(String identificadorPagamento) {
 		log.warn("### MOCK ###");
-		StatusPedido statusPedido = StatusPedido.PAGAMENTO_INVALIDO;
-        if (statusPagamento.equals("pago_sucesso")) {
-            statusPedido = StatusPedido.PAGO;
-        }
-        return statusPedido;	
-      }
+		return StatusPedido.PAGO;
+    }
 }

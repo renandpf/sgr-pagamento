@@ -2,8 +2,6 @@ package br.com.pupposoft.fiap.sgr.config.database.pagamento.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -18,17 +16,14 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Pagamento")
-public class PagamentoEntity {
+@Table(name = "Pedido")
+public class PedidoEntity {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	private String identificadorPagamentoExterno;
-	
 	private Double valor;
-
+	
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "pedidoId")
-	private PedidoEntity pedido;
+	@JoinColumn(name = "clienteId")
+	private ClienteEntity cliente;
+
 }
