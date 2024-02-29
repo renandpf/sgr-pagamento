@@ -17,8 +17,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.ClienteEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PagamentoEntity;
+import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PedidoEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.repository.PagamentoEntityRepository;
+import br.com.pupposoft.fiap.sgr.pagamento.core.dto.ClienteDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PagamentoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.ErrorToAccessRepositoryException;
@@ -36,11 +39,23 @@ class PagamentoGatewayMySqlRepositoryUnitTest {
 	
 	@Test
 	void shouldSucessOncriar() {
+		ClienteDto clienteDto = ClienteDto.builder()
+				.id(getRandomLong())
+				.nome(getRandomString())
+				.email(getRandomString())
+				.telefone(getRandomString())
+				.build();
+		
+		PedidoDto pedidoDto = PedidoDto.builder().
+				id(getRandomLong())
+				.cliente(clienteDto)
+				.valor(getRandomDouble())
+				.build();
 		
 		PagamentoDto pagamentoDtoParam = PagamentoDto.builder()
 				.pagamentoExternoId(getRandomString())
 				.valor(getRandomDouble())
-				.pedido(PedidoDto.builder().id(getRandomLong()).build())
+				.pedido(pedidoDto)
 				.build();
 		
 		PagamentoEntity pagamentoEntitySaved = PagamentoEntity.builder()
@@ -59,16 +74,34 @@ class PagamentoGatewayMySqlRepositoryUnitTest {
 		
 		assertEquals(pagamentoDtoParam.getPagamentoExternoId() , pagamentoEntityCaptured.getIdentificadorPagamentoExterno());
 		assertEquals(pagamentoDtoParam.getValor(), pagamentoEntityCaptured.getValor());
-		assertEquals(pagamentoDtoParam.getPedido().getId(), pagamentoEntityCaptured.getPedidoId());
+		assertEquals(pagamentoDtoParam.getPedido().getId(), pagamentoEntityCaptured.getPedido().getId());
+		assertEquals(pagamentoDtoParam.getPedido().getValor(), pagamentoEntityCaptured.getPedido().getValor());
+		assertEquals(pagamentoDtoParam.getPedido().getCliente().getId(), pagamentoEntityCaptured.getPedido().getCliente().getId());
+		assertEquals(pagamentoDtoParam.getPedido().getCliente().getNome(), pagamentoEntityCaptured.getPedido().getCliente().getNome());
+		assertEquals(pagamentoDtoParam.getPedido().getCliente().getTelefone(), pagamentoEntityCaptured.getPedido().getCliente().getTelefone());
+		assertEquals(pagamentoDtoParam.getPedido().getCliente().getEmail(), pagamentoEntityCaptured.getPedido().getCliente().getEmail());
 	}
 	
 	@Test
 	void shouldErrorToAccessRepositoryExceptionOncriar() {
 		
+		ClienteDto clienteDto = ClienteDto.builder()
+				.id(getRandomLong())
+				.nome(getRandomString())
+				.email(getRandomString())
+				.telefone(getRandomString())
+				.build();
+		
+		PedidoDto pedidoDto = PedidoDto.builder().
+				id(getRandomLong())
+				.cliente(clienteDto)
+				.valor(getRandomDouble())
+				.build();
+		
 		PagamentoDto pagamentoDtoParam = PagamentoDto.builder()
 				.pagamentoExternoId(getRandomString())
 				.valor(getRandomDouble())
-				.pedido(PedidoDto.builder().id(getRandomLong()).build())
+				.pedido(pedidoDto)
 				.build();
 		
 		doThrow(new RuntimeException()).when(pagamentoRepository).save(any(PagamentoEntity.class));
@@ -82,12 +115,24 @@ class PagamentoGatewayMySqlRepositoryUnitTest {
 		
 		final String pagamentoExternoIdParam = getRandomString();
 		
+		ClienteEntity clienteEntity = ClienteEntity.builder()
+				.id(getRandomLong())
+				.nome(getRandomString())
+				.email(getRandomString())
+				.telefone(getRandomString())
+				.build();
+		
+		PedidoEntity pedidoEntity = PedidoEntity.builder()
+				.id(getRandomLong())
+				.valor(getRandomDouble())
+				.cliente(clienteEntity)
+				.build();
 		
 		PagamentoEntity pagamentoEntityExistent = PagamentoEntity.builder()
 				.id(getRandomLong())
 				.identificadorPagamentoExterno(pagamentoExternoIdParam)
 				.valor(getRandomDouble())
-				.pedidoId(getRandomLong())
+				.pedido(pedidoEntity)
 				.build();
 		doReturn(Optional.of(pagamentoEntityExistent)).when(pagamentoRepository).findByIdentificadorPagamentoExterno(pagamentoExternoIdParam);
 		
@@ -98,7 +143,12 @@ class PagamentoGatewayMySqlRepositoryUnitTest {
 		
 		assertEquals(pagamentoEntityExistent.getId() , pagamentoDto.getId());
 		assertEquals(pagamentoExternoIdParam, pagamentoDto.getPagamentoExternoId());
-		assertEquals(pagamentoEntityExistent.getPedidoId() , pagamentoDto.getPedido().getId());
+		assertEquals(pagamentoEntityExistent.getPedido().getId() , pagamentoDto.getPedido().getId());
+		assertEquals(pagamentoEntityExistent.getPedido().getValor() , pagamentoDto.getPedido().getValor());
+		assertEquals(pagamentoEntityExistent.getPedido().getCliente().getId() , pagamentoDto.getPedido().getCliente().getId());
+		assertEquals(pagamentoEntityExistent.getPedido().getCliente().getNome() , pagamentoDto.getPedido().getCliente().getNome());
+		assertEquals(pagamentoEntityExistent.getPedido().getCliente().getEmail() , pagamentoDto.getPedido().getCliente().getEmail());
+		assertEquals(pagamentoEntityExistent.getPedido().getCliente().getTelefone() , pagamentoDto.getPedido().getCliente().getTelefone());
 		
 		verify(pagamentoRepository).findByIdentificadorPagamentoExterno(pagamentoExternoIdParam);
 	}

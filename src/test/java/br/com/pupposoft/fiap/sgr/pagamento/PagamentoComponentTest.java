@@ -29,7 +29,9 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 import br.com.pupposoft.fiap.SgrPagamentoService;
+import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.ClienteEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PagamentoEntity;
+import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PedidoEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.entity.PlataformaPagamentoEntity;
 import br.com.pupposoft.fiap.sgr.config.database.pagamento.repository.PlataformaPagamentoEntityRepository;
 import br.com.pupposoft.fiap.sgr.pagamento.adapter.web.PagamentoApiController;
@@ -114,12 +116,23 @@ class PagamentoComponentTest extends ComponentTestBase {
 
 	private PagamentoEntity createObterByIdentificadorPagamentoData() {
 		
-		PagamentoEntity pagamentoEntity = PagamentoEntity
-				.builder()
-				.id(null)
+    	ClienteEntity clienteEntity = ClienteEntity.builder()
+				.id(getRandomLong())
+				.nome(getRandomString())
+				.email(getRandomString())
+				.telefone(getRandomString())
+				.build();
+		
+		PedidoEntity pedidoEntity = PedidoEntity.builder()
+				.id(getRandomLong())
+				.valor(getRandomDouble())
+				.cliente(clienteEntity)
+				.build();
+		
+		PagamentoEntity pagamentoEntity = PagamentoEntity.builder()
 				.identificadorPagamentoExterno(getRandomString())
 				.valor(getRandomDouble())
-				.pedidoId(getRandomLong())
+				.pedido(pedidoEntity)
 				.build();
 		
 		pagamentoEntityRepository.save(pagamentoEntity);
