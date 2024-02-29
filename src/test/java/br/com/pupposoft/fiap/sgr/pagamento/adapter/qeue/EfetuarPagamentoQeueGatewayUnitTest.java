@@ -66,10 +66,10 @@ class EfetuarPagamentoQeueGatewayUnitTest {
 		assertEquals(pedidoMessageJson.getId(), pagamentoDtoSent.getPedido().getId());
 		assertEquals(pedidoMessageJson.getStatus(), pagamentoDtoSent.getPedido().getStatus().name());
 		assertEquals(pedidoMessageJson.getValor(), pagamentoDtoSent.getPedido().getValor());
-		assertEquals(pedidoMessageJson.getCliente().getId(), pagamentoDtoSent.getPedido().getClienteId());
-		assertEquals(pedidoMessageJson.getCliente().getEmail(), pagamentoDtoSent.getPedido().getClienteEmail());
-		assertEquals(pedidoMessageJson.getCliente().getTelefone(), pagamentoDtoSent.getPedido().getClienteTelefone());
-		assertEquals(pedidoMessageJson.getCliente().getNome(), pagamentoDtoSent.getPedido().getClienteNome());
+		assertEquals(pedidoMessageJson.getCliente().getId(), pagamentoDtoSent.getPedido().getCliente().getId());
+		assertEquals(pedidoMessageJson.getCliente().getEmail(), pagamentoDtoSent.getPedido().getCliente().getEmail());
+		assertEquals(pedidoMessageJson.getCliente().getTelefone(), pagamentoDtoSent.getPedido().getCliente().getTelefone());
+		assertEquals(pedidoMessageJson.getCliente().getNome(), pagamentoDtoSent.getPedido().getCliente().getNome());
 	}
 	
 	@Test

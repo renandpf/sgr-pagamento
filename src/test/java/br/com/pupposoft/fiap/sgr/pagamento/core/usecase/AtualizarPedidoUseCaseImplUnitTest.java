@@ -28,8 +28,6 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.dto.NotificarDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PagamentoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.dto.PedidoDto;
 import br.com.pupposoft.fiap.sgr.pagamento.core.exception.PagamentoNaoEncontradoException;
-import br.com.pupposoft.fiap.sgr.pagamento.core.exception.PedidoNaoEncontradoException;
-import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.ClienteGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.NotificarGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PagamentoGateway;
 import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PedidoGateway;
@@ -39,13 +37,10 @@ import br.com.pupposoft.fiap.sgr.pagamento.core.gateway.PlataformaPagamentoGatew
 class AtualizarPedidoUseCaseImplUnitTest {
 	
 	@InjectMocks
-	private AtualizarStatusPagamentoUseCase atualizarStatusPagamentoUseCase = new AtualizarPedidoUseCaseImpl(null, null, null, null, null);
+	private AtualizarStatusPagamentoUseCase atualizarStatusPagamentoUseCase = new AtualizarPedidoUseCaseImpl(null, null, null, null);
 	
 	@Mock
 	private PedidoGateway pedidoGateway;
-	
-	@Mock
-	private ClienteGateway clienteGateway;
 	
 	@Mock
 	private PlataformaPagamentoFactory plataformaPagamentoFactory;
@@ -61,25 +56,20 @@ class AtualizarPedidoUseCaseImplUnitTest {
 		final PlataformaPagamento plataformaPagamento = PlataformaPagamento.MERCADO_PAGO; 
 		final String identificadorPagamento = getRandomString();
 		
-		PagamentoDto pagamentoDto = PagamentoDto.builder().pedido(PedidoDto.builder().id(getRandomLong()).build()).build();
-		doReturn(Optional.of(pagamentoDto)).when(pagamentoGateway).obterPorIdentificadorPagamento(identificadorPagamento);
-		
-		PedidoDto pedidoDto = PedidoDto.builder().id(getRandomLong()).clienteId(getRandomLong()).build();
-		doReturn(Optional.of(pedidoDto)).when(pedidoGateway).obterPorId(pagamentoDto.getPedido().getId());
-		
-		ClienteDto clienteDto = ClienteDto.builder().build();
-		doReturn(Optional.of(clienteDto)).when(clienteGateway).obterPorId(pedidoDto.getClienteId());
-		
 		StatusPedido newStatus = StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO;
 		PlataformaPagamentoGateway plataformaPagamentoGatewayMock = Mockito.mock(PlataformaPagamentoGateway.class);
 		doReturn(newStatus).when(plataformaPagamentoGatewayMock).obtemStatus(identificadorPagamento);
 		doReturn(plataformaPagamentoGatewayMock).when(plataformaPagamentoFactory).obter(plataformaPagamento);
 		
+		ClienteDto clienteDto = ClienteDto.builder().id(getRandomLong()).email(getRandomString()).telefone(getRandomString()).build();
+		PedidoDto pedidoDto = PedidoDto.builder().id(getRandomLong()).cliente(clienteDto).build();
+		
+		PagamentoDto pagamentoDto = PagamentoDto.builder().id(getRandomLong()).pagamentoExternoId(identificadorPagamento).pedido(pedidoDto).build();
+		doReturn(Optional.of(pagamentoDto)).when(pagamentoGateway).obterPorIdentificadorPagamento(identificadorPagamento);
+		
 		atualizarStatusPagamentoUseCase.atualizar(plataformaPagamento, identificadorPagamento);
 		
 		verify(pagamentoGateway).obterPorIdentificadorPagamento(identificadorPagamento);
-		verify(pedidoGateway).obterPorId(pagamentoDto.getPedido().getId());
-		verify(clienteGateway).obterPorId(pedidoDto.getClienteId());
 		
 		ArgumentCaptor<PedidoDto> pedidoDtoAC = ArgumentCaptor.forClass(PedidoDto.class);
 		verify(pedidoGateway).alterarStatus(pedidoDtoAC.capture());
@@ -108,32 +98,17 @@ class AtualizarPedidoUseCaseImplUnitTest {
 		final PlataformaPagamento plataformaPagamento = PlataformaPagamento.MERCADO_PAGO; 
 		final String identificadorPagamento = getRandomString();
 		
+		StatusPedido newStatus = StatusPedido.AGUARDANDO_CONFIRMACAO_PAGAMENTO;
+		PlataformaPagamentoGateway plataformaPagamentoGatewayMock = Mockito.mock(PlataformaPagamentoGateway.class);
+		doReturn(newStatus).when(plataformaPagamentoGatewayMock).obtemStatus(identificadorPagamento);
+		doReturn(plataformaPagamentoGatewayMock).when(plataformaPagamentoFactory).obter(plataformaPagamento);
+		
 		doReturn(Optional.empty()).when(pagamentoGateway).obterPorIdentificadorPagamento(identificadorPagamento);
 		
 		assertThrows(PagamentoNaoEncontradoException.class, () -> atualizarStatusPagamentoUseCase.atualizar(plataformaPagamento, identificadorPagamento));
 		
 		verify(pagamentoGateway).obterPorIdentificadorPagamento(identificadorPagamento);
-		verify(pedidoGateway, never()).obterPorId(any(Long.class));
-		verify(plataformaPagamentoFactory, never()).obter(any(PlataformaPagamento.class));
+		verify(plataformaPagamentoFactory).obter(any(PlataformaPagamento.class));
 		verify(pedidoGateway, never()).alterarStatus(any(PedidoDto.class));
 	}
-	
-	@Test
-	void shouldPedidoNaoEncontradoExceptionOnAtualizar() {
-		final PlataformaPagamento plataformaPagamento = PlataformaPagamento.MERCADO_PAGO; 
-		final String identificadorPagamento = getRandomString();
-		
-		PagamentoDto pagamentoDto = PagamentoDto.builder().pedido(PedidoDto.builder().id(getRandomLong()).build()).build();
-		doReturn(Optional.of(pagamentoDto)).when(pagamentoGateway).obterPorIdentificadorPagamento(identificadorPagamento);
-		
-		doReturn(Optional.empty()).when(pedidoGateway).obterPorId(pagamentoDto.getPedido().getId());
-		
-		assertThrows(PedidoNaoEncontradoException.class, () -> atualizarStatusPagamentoUseCase.atualizar(plataformaPagamento, identificadorPagamento));
-		
-		verify(pagamentoGateway).obterPorIdentificadorPagamento(identificadorPagamento);
-		verify(pedidoGateway).obterPorId(pagamentoDto.getPedido().getId());
-		verify(plataformaPagamentoFactory, never()).obter(any(PlataformaPagamento.class));
-		verify(pedidoGateway, never()).alterarStatus(any(PedidoDto.class));
-	}
-	
 }
