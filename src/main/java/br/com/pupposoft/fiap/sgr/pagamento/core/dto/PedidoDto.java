@@ -14,6 +14,9 @@ import lombok.ToString;
 public class PedidoDto {
     private Long id;
     private Long clienteId;
+    private String clienteNome;
+    private String clienteEmail;
+    private String clienteTelefone;
     private List<ItemDto> itens;
     
     @Setter
